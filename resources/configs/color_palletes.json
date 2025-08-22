@@ -1,0 +1,38 @@
+{
+    "Dark Shade": {
+        "color_1": "#0A162C",
+        "color_2": "#282D40",
+        "color_3": "#4A495A",
+        "color_4": "#83828B",
+        "color_5": "#BCBCBC"
+    },
+    "Deep Sea": {
+        "color_1": "#0d1b2a",
+        "color_2": "#1b263b",
+        "color_3": "#415a77",
+        "color_4": "#778da9",
+        "color_5": "#e0e1dd"
+    },
+    "Sunset Bliss": {
+        "color_1": "#50514f",
+        "color_2": "#f25f5c",
+        "color_3": "#ffe066",
+        "color_4": "#247ba0",
+        "color_5": "#70c1b3"
+    },
+    "asdasd": {
+    },
+    "sdfsdf": {
+        "color_1": "#50514f",
+        "color_10": "#ffbbff",
+        "color_11": "#ffbbcc",
+        "color_2": "#f25f5c",
+        "color_3": "#ffe066",
+        "color_4": "#247ba0",
+        "color_5": "#70c1b3",
+        "color_6": "#50514f",
+        "color_7": "#f25f5c",
+        "color_8": "#ffe066",
+        "color_9": "#247ba0"
+    }
+}

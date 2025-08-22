@@ -1,0 +1,13 @@
+<RCC>
+    <qresource prefix="/">
+        <file>resources/pallete_button.png</file>
+        <file>resources/icon_color_picker_3.png</file>
+        <file>resources/icon_color_picker.png</file>
+        <file>resources/copy_icon_1.png</file>
+        <file>resources/pallete_button.png</file>
+        <file>resources/color_combinations.png</file>
+        <file>resources/add_icon.png</file>
+        <file>resources/style.qss</file>
+        <file>resources/donation.png</file>
+    </qresource>
+</RCC>

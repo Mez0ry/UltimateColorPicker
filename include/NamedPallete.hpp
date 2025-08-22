@@ -1,0 +1,35 @@
+#ifndef NAMEDPALLETE_H
+#define NAMEDPALLETE_H
+#include <QLabel>
+#include "DeletePopup.hpp"
+#include <QJsonObject>
+
+class NamedPallete : public QLabel{
+    Q_OBJECT
+private:
+    int m_Height,m_Width;
+    QString m_PalleteName;
+    QJsonObject m_ColorValues;
+    DeletePopup m_DeletePopup;
+public:
+    explicit NamedPallete(const QString& pallete_name,QJsonObject color_values = QJsonObject(),QWidget* parent = nullptr);
+
+    ~NamedPallete() = default;
+
+    void Serialize(QJsonDocument doc, const QString& file_path);
+    static void Serialize(const NamedPallete* pallete, QJsonDocument& doc, const QString& file_path);
+
+    QJsonObject GetColors() const;
+    void SetColors(QJsonObject colors);
+
+    const QString& GetPalleteName() const;
+signals:
+    void JsonConfigUpdate(NamedPallete* pallete_to_remove);
+    void Clicked();
+
+protected:
+    void mousePressEvent(QMouseEvent* event) Q_DECL_OVERRIDE;
+    void paintEvent(QPaintEvent*) Q_DECL_OVERRIDE;
+private:
+};
+#endif // NAMEDPALLETE_H
