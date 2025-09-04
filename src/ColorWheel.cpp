@@ -179,11 +179,9 @@ void internal::OklabColorWheel::OnPaintEvent(QPainter& painter)
     for (int i = 0; i < num_steps; ++i) {
         double normalized_angle = (double) i / (double) (num_steps - 1);
 
-        const double chroma = 1.f;
-
-        const double a = chroma * std::cos(2 * M_PI * normalized_angle);
-        const double b = chroma * std::sin(2 * M_PI * normalized_angle);
-        auto color = Utils::ColorConversion::oklab_to_rgb(1.0f, a, b);
+        const double a = m_CurrentChroma * std::cos(2 * M_PI * normalized_angle);
+        const double b = m_CurrentChroma * std::sin(2 * M_PI * normalized_angle);
+        auto color = Utils::ColorConversion::oklab_to_rgb(m_CurrentLightness, a, b);
 
         gradient.setColorAt(normalized_angle, color);
     }
