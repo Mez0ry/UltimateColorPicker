@@ -3,10 +3,10 @@
 
 #include "Utils.hpp"
 
-AddIcon::AddIcon(QWidget *parent) : QLabel(parent), m_Height(32),m_Width(32), m_PalleteNamePopup(parent){
+AddIcon::AddIcon(QWidget *parent, QSize size) : QLabel(parent), m_Size(size) , m_PalleteNamePopup(parent){
     QPixmap add_icon_pixmap(":/resources/add_icon.png");
     this->setPixmap(add_icon_pixmap);
-    this->setGeometry(0,0,m_Width,m_Height);
+    this->setGeometry(0,0,m_Size.width(),m_Size.height());
     this->setToolTip("Add color");
 
     connect(&m_PalleteNamePopup,&QLineEdit::returnPressed,this,[=](){

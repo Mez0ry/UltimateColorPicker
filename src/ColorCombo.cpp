@@ -1,8 +1,13 @@
 #include "ColorCombo.hpp"
+#include "mainwindow.h"
+
+#include <QMainWindow>
+
+#include <QGridLayout>
+#include <QProxyStyle>
 #include "ColorCell.hpp"
 #include "Utils.hpp"
-#include <QProxyStyle>
-#include "mainwindow.h"
+
 
 ColorCombo::ColorCombo(QWidget *parent) : QWidget(parent), m_BaseColor(nullptr){
     auto main_window = static_cast<MainWindow*>(Utils::GetMainWindow());
@@ -32,11 +37,6 @@ ColorCombo::ColorCombo(QWidget *parent) : QWidget(parent), m_BaseColor(nullptr){
         ClearGridLayout(m_ColorComboGrid);
         this->UpdateColor();
     });
-}
-
-ColorCombo::~ColorCombo()
-{
-
 }
 
 void ColorCombo::SetBaseColor(QColor *base_color)

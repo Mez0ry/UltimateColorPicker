@@ -1,12 +1,10 @@
 #ifndef SHADECIRCLE_HPP
 #define SHADECIRCLE_HPP
-#include "Hsv.hpp"
 #include <QWidget>
 #include <QPainter>
 #include <QMouseEvent>
 #include <QComboBox>
 #include <QKeyEvent>
-#include <QSharedDataPointer>
 
 class ShadeCircle : public QWidget{
     Q_OBJECT
@@ -19,8 +17,8 @@ private:
     QPoint m_dragStart;
     bool m_IsChoosingColor;
 public:
-   explicit ShadeCircle(QWidget* parent = nullptr);
-    ~ShadeCircle() = default;
+   explicit ShadeCircle(QWidget* parent = Q_NULLPTR);
+    ~ShadeCircle() Q_DECL_EQ_DEFAULT;
 
     void SetRelativeColor(QColor relative_color);
     QColor GetRelativeColor() const {return m_RelativeColor;}

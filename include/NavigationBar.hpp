@@ -3,15 +3,14 @@
 #include <QWidget>
 #include <QPushButton>
 #include "ColorPicker.hpp"
-#include "ColorCombo.hpp"
 #include "ColorPallete.hpp"
 
 class NavigationBar : public QWidget{
     Q_OBJECT
 private:
 public:
-    explicit NavigationBar(QWidget* parent = nullptr);
-    ~NavigationBar();
+    explicit NavigationBar(QWidget* parent = Q_NULLPTR);
+    ~NavigationBar() Q_DECL_EQ_DEFAULT;
 
 private:
     ColorPicker m_ColorPicker;

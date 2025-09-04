@@ -3,7 +3,6 @@
 #include <QColor>
 #include <QPixmap>
 #include <QPoint>
-#include <QRadialGradient>
 
 class QTimer;
 class QPaintEvent;
@@ -15,7 +14,7 @@ class ColorPicker : public QWidget {
     Q_OBJECT
 private:
     QMetaObject::Connection m_TimerConnection;
-    QTimer* m_Timer {nullptr};
+    QTimer* m_Timer {Q_NULLPTR};
     QColor  m_SelectedColor {Qt::black};
     QPixmap m_MagnifierSrc;
     QPoint  m_CursorGlobal;
@@ -23,12 +22,10 @@ private:
     int     m_Grid   {10};
     int m_Hole {32};
 public:
-    explicit ColorPicker(QWidget *parent = nullptr);
+    explicit ColorPicker(QWidget *parent = Q_NULLPTR);
     ~ColorPicker();
 
     void Start();
-
-
 protected:
     void paintEvent(QPaintEvent*) Q_DECL_OVERRIDE;
     void mouseMoveEvent(QMouseEvent*) Q_DECL_OVERRIDE;

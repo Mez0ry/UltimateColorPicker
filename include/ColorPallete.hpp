@@ -1,23 +1,8 @@
 #ifndef COLORPALLETE_HPP
 #define COLORPALLETE_HPP
 #include <QWidget>
-#include <QString>
-#include <QLabel>
-#include <QFile>
-#include <QJsonDocument>
-#include <QJsonObject>
-#include <QJsonArray>
-#include <QRadialGradient>
-#include <QPainter>
-#include <QLineEdit>
-#include <QResizeEvent>
-#include "Utils.hpp"
-#include <QJsonObject>
 
-#include <QSettings>
-#include <QPainterPath>
-
-
+class QFrame;
 class QVBoxLayout;
 
 class DeletePopup;
@@ -31,14 +16,14 @@ class QScrollArea;
 class ColorPallete : public QWidget{
     Q_OBJECT
 private:
-    int m_Width,m_Height;
+    QSize m_Size;
     QFrame* m_BackgroundVBoxLayout;
     QScrollArea* m_ScrollArea;
     AddIcon* m_AddIcon;
     QFrame* m_Content;
 public:
-    explicit ColorPallete(QWidget* parent = nullptr);
-    ~ColorPallete();
+    explicit ColorPallete(QWidget* parent = Q_NULLPTR);
+    ~ColorPallete() Q_DECL_EQ_DEFAULT;
 
     void OnButtonClicked();
 protected:
@@ -48,7 +33,6 @@ protected:
 private:
     void OnResize(QSize new_size);
     void UpdateColorPalletes();
-
 };
 
 #endif // COLORPALLETE_HPP

@@ -12,7 +12,6 @@ DeletePopup::DeletePopup(QWidget *parent) : QLabel(parent){
     this->setFont(font);
     this->setText("Delete");
 
-
     this->setSizePolicy(QSizePolicy::Preferred,QSizePolicy::Preferred);
 
     this->setMinimumWidth(10);

@@ -1,5 +1,5 @@
-#ifndef ADDICON_H
-#define ADDICON_H
+#ifndef ADDICON_HPP
+#define ADDICON_HPP
 #include <QLineEdit>
 #include <QLabel>
 
@@ -8,9 +8,9 @@ class PalleteNameSpecifierPopup : public QLineEdit{
 private:
 
 public:
-    PalleteNameSpecifierPopup(QWidget* parent = nullptr);
+    PalleteNameSpecifierPopup(QWidget* parent = Q_NULLPTR);
 
-    ~PalleteNameSpecifierPopup() = default;
+    ~PalleteNameSpecifierPopup() Q_DECL_EQ_DEFAULT;
 signals:
     void PressedOutside();
 protected:
@@ -21,13 +21,13 @@ private:
 class AddIcon : public QLabel{
     Q_OBJECT
 private:
-    int m_Height,m_Width;
+    QSize m_Size;
     PalleteNameSpecifierPopup m_PalleteNamePopup;
     QString m_TextToAdd;
 public:
-    explicit AddIcon(QWidget* parent = nullptr);
+    explicit AddIcon(QWidget* parent = Q_NULLPTR,QSize size = {32,32});
 
-    ~AddIcon() = default;
+    ~AddIcon() Q_DECL_EQ_DEFAULT;
 
     void OnParentGeometryUpdate(QRect rect);
     void OnParentSizeUpdate(QSize size);
@@ -44,4 +44,4 @@ protected:
     void closeEvent(QCloseEvent *event) Q_DECL_OVERRIDE;
 private:
 };
-#endif // ADDICON_H
+#endif // ADDICON_HPP

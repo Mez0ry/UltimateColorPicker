@@ -3,13 +3,13 @@
 
 #include <QMainWindow>
 #include <QPushButton>
-#include "ColorWheel.hpp"
-#include "NavigationBar.hpp"
 #include <QMdiSubWindow>
 #include <QMdiArea>
 
+#include "ui_mainwindow.h"
+
 namespace Ui {
-class MainWindow;
+    class MainWindow;
 }
 
 class MainWindow : public QMainWindow

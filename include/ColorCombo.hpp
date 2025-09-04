@@ -1,14 +1,14 @@
-#ifndef COLORCOMBO_H
-#define COLORCOMBO_H
+#ifndef COLORCOMBO_HPP
+#define COLORCOMBO_HPP
 #include <QWidget>
-#include <QComboBox>
-#include <QGridLayout>
 #include <QColor>
-
 #include <vector>
 #include <unordered_map>
 
-enum class ColorType{
+class QComboBox;
+class QGridLayout;
+
+enum class ColorType : quint8{
     COMPLEMENTARY = 0,
     SPLIT_COMPLEMENTARY,
     TRIADIC,
@@ -26,8 +26,8 @@ private:
     std::unordered_map<int,std::vector<QColor>> m_ColorTypesMap;
 
 public:
-    explicit ColorCombo(QWidget* parent = nullptr);
-    ~ColorCombo();
+    explicit ColorCombo(QWidget* parent = Q_NULLPTR);
+    ~ColorCombo() Q_DECL_EQ_DEFAULT;
 
     void SetBaseColor(QColor* base_color);
 signals:
@@ -39,4 +39,4 @@ private:
     void AddColorCellsToLayout(QGridLayout* layout, std::vector<QColor>& color);
 };
 
-#endif // COLORCOMBO_H
+#endif // COLORCOMBO_HPP

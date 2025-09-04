@@ -3,6 +3,7 @@
 #include <QGridLayout>
 #include <QWidget>
 
+class QLayoutItem;
 class QWidget;
 
 class GridLayout : public QGridLayout{
@@ -10,9 +11,9 @@ class GridLayout : public QGridLayout{
 private:
     QSize m_GridSize;
 public:
-    GridLayout(int rows, int cols,QWidget* parent = nullptr);
+    GridLayout(int rows, int cols,QWidget* parent = Q_NULLPTR);
 
-    ~GridLayout() = default;
+    ~GridLayout() Q_DECL_EQ_DEFAULT;
 
     void PushWidget(QWidget* w,Qt::Alignment alignment = Qt::Alignment() );
     void PushWidget(QWidget *w, int row_span = 0, int column_span = 0, Qt::Alignment alignment = Qt::Alignment());
@@ -82,7 +83,6 @@ public:
 
 public slots:
     void UpdateWidgetsToGridSize(QSize new_size);
-
 signals:
     void GridSizeChanged(QSize new_size);
 private:

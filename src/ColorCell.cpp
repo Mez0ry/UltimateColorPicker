@@ -2,14 +2,14 @@
 #include <QGuiApplication>
 #include <QClipboard>
 
-ColorCell::ColorCell(QColor color,QWidget *parent) : QLabel(parent), m_Height(16), m_Width(16)
+ColorCell::ColorCell(QColor color, QSize size, QWidget *parent) : QLabel(parent), m_Size(size)
 {
     this->SetColor(color);
 }
 
 void ColorCell::SetColor(QColor color)
 {
-    QPixmap pixmap(m_Height,m_Width);
+    QPixmap pixmap(m_Size);
     pixmap.fill(color);
     this->setPixmap(pixmap);
 }

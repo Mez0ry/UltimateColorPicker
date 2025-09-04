@@ -1,8 +1,11 @@
 #include "NavigationBar.hpp"
-#include "mainwindow.h"
 #include <QShortcut>
 #include <QKeySequence>
 #include <QDesktopServices>
+
+#include "mainwindow.h"
+
+#include "Utils.hpp"
 
 NavigationBar::NavigationBar(QWidget *parent) : QWidget(parent)
 {
@@ -32,9 +35,4 @@ NavigationBar::NavigationBar(QWidget *parent) : QWidget(parent)
         Q_UNUSED(pressed);
         QDesktopServices::openUrl(QUrl("https://www.donationalerts.com/r/hustrik1337", QUrl::TolerantMode));
     });
-}
-
-NavigationBar::~NavigationBar()
-{
-
 }

@@ -10,20 +10,6 @@ QMainWindow *Utils::GetMainWindow()
     return nullptr;
 }
 
-Hsv Utils::GetHsvFrom(const QPoint &point, float radius, Brightness brightness)
-{
-    Hsv hsv;
-    hsv.hue = Hue((qAtan2(point.x() - radius, point.y() - radius) + M_PI) / (2.f * M_PI));
-    hsv.saturation = Saturation(qSqrt(qPow(point.x() - radius, 2) + qPow(point.y() - radius, 2)) / radius);
-    hsv.brightness = brightness;
-
-    if(hsv.saturation.GetSaturation() > 1.0f){
-        hsv.saturation.SetSaturation(1.0f);
-    }
-
-    return hsv;
-}
-
 QColor Utils::GetColorFrom(const QPoint &pt, QWidget *widget)
 {
     QPixmap pixmap(widget->grab());
@@ -147,4 +133,20 @@ void Utils::Json::SaveJson(QJsonDocument doc, QString file_path)
     }
 
     file.write(doc.toJson());
+}
+
+QColor Utils::GetInveseredColor(QColor color, int inverse_if_less_than_val)
+{
+    float luminance = CalculateLuminance(color);
+    QString inverse = (luminance < inverse_if_less_than_val ) ? "#fff" : "#000";
+
+    QString base_name = color.name();
+    base_name.replace(0, inverse.size(), inverse);
+
+    return QColor(base_name);
+}
+
+float Utils::CalculateLuminance(QColor color)
+{
+    return (float) (0.2126 * color.red() + 0.7152 * color.green() + 0.0722 * color.blue());
 }

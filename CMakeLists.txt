@@ -28,9 +28,10 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         ${PROJECT_SOURCES}
 
         src/AddIcon.cpp src/ColorCell.cpp src/ColorCombo.cpp src/ColoredEllipse.cpp src/ColorInfo.cpp src/ColorPallete.cpp src/ColorPicker.cpp src/ColorWheel.cpp src/DeletePopup.cpp src/GridLayout.cpp src/main.cpp src/mainwindow.cpp src/NamedPallete.cpp src/NavigationBar.cpp src/ShadeCircle.cpp src/Utils.cpp
-        include/AddIcon.hpp include/ColorCell.hpp include/ColorCombo.hpp include/ColoredEllipse.hpp include/ColorInfo.hpp include/ColorPallete.hpp include/ColorPicker.hpp include/ColorWheel.hpp include/DeletePopup.hpp include/GridLayout.hpp include/Hsv.hpp include/mainwindow.h include/NamedPallete.hpp include/NavigationBar.hpp include/ShadeCircle.hpp include/Utils.hpp
+        include/AddIcon.hpp include/ColorCell.hpp include/ColorCombo.hpp include/ColoredEllipse.hpp include/ColorInfo.hpp include/ColorPallete.hpp include/ColorPicker.hpp include/ColorWheel.hpp include/DeletePopup.hpp include/GridLayout.hpp  include/mainwindow.h include/NamedPallete.hpp include/NavigationBar.hpp include/ShadeCircle.hpp include/Utils.hpp
         application.qrc
-
+        include/ColorConversion.hpp
+        src/ColorConversion.cpp
     )
 
     target_include_directories(UltimateColorPicker PRIVATE  include)
@@ -68,7 +69,7 @@ else()
     set(CompileOptions  "-Wall;-Wextra;-Wpedantic;" )
 
     if(${CMAKE_BUILD_TYPE} STREQUAL "Debug")
-        list(APPEND CompileOptions "-Werror")
+        list(APPEND CompileOptions "-Werror" )
         message(${CompileOptions})
     endif()
         message(${CompileOptions})

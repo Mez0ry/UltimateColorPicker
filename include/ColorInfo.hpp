@@ -9,9 +9,8 @@ private:
     std::shared_ptr<QColor> m_ColorContext;
     QString m_RgbaFormat;
     std::vector<QMetaObject::Connection> m_Connections;
-
 public:
-    explicit ColorInfo(std::shared_ptr<QColor> color, QWidget* parent = nullptr);
+    explicit ColorInfo(std::shared_ptr<QColor> color, QWidget* parent = Q_NULLPTR);
     ~ColorInfo();
 
     void SetColorContext(std::shared_ptr<QColor> color);
@@ -21,7 +20,6 @@ public slots:
     void SetupColorInfo();
 signals:
     void InfoChanged();
-
 private:
     void SetupConnections();
     void DisconnectAll();

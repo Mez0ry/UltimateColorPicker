@@ -10,7 +10,6 @@
 #include <QScreen>
 #include <QTimer>
 #include <QCloseEvent>
-#include "Utils.hpp"
 
 ColorPicker::ColorPicker(QWidget *parent)
     : QWidget(parent)

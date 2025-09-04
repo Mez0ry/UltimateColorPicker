@@ -1,5 +1,6 @@
 #include "ShadeCircle.hpp"
-#include "mainwindow.h"
+#include <QPainterPath>
+#include "Utils.hpp"
 
 ShadeCircle::ShadeCircle(QWidget *parent) : QWidget(parent), m_RelativeColor(QColor(55,55,255,255))  , m_IsChoosingColor(false){
     auto size_policy = QSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
@@ -42,7 +43,6 @@ void ShadeCircle::paintEvent(QPaintEvent *event)
 
     painter.setViewport(0, 0 , this->width() , this->height());
 
-    QColor from_color{m_RelativeColor.lighter(200)}, to_color{m_RelativeColor.darker(300)};
     auto shade_grad = QRadialGradient(this->rect().center(),37);
 
     float pos_offset = 0, // from 0.0f to 1.0f
@@ -85,7 +85,7 @@ void ShadeCircle::paintEvent(QPaintEvent *event)
     QPoint point(parent_center.x() - this->rect().width() / 2 , parent_center.y() - this->rect().height() / 2 );
 
     this->move(point);
-    this->setGeometry(point.x(),point.y(),82,82); // 82,82 best
+    this->setGeometry(point.x(),point.y(),82,82);
 }
 
 void ShadeCircle::mouseMoveEvent(QMouseEvent *event)

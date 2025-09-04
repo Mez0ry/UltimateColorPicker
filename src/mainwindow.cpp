@@ -1,14 +1,18 @@
 #include "mainwindow.h"
-#include <QSettings>
-#include <QPropertyAnimation>
+#include <QFile>
 #include <QGraphicsOpacityEffect>
+#include <QPointer>
+#include <QPropertyAnimation>
+#include <QSettings>
+#include "ColorWheel.hpp"
+#include "NavigationBar.hpp"
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)  , m_Ui(new Ui::MainWindow)
 {
     m_Ui->setupUi(this);
     this->centralWidget()->setMouseTracking(true);
     m_Ui->formLayout->addWidget(new ColorWheel());
-    auto nav_bar = new NavigationBar(m_Ui->NavigationWidget);
+    QPointer nav_bar = new NavigationBar(m_Ui->NavigationWidget);
     Q_UNUSED(nav_bar);
 
     QSettings settings("Mezory", "ColorPicker");
@@ -16,7 +20,6 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)  , m_Ui(new Ui::Ma
     settings.beginGroup("ConfigFiles");
 
     settings.setValue("color_pallete_config","data/color_palletes.json");
-
 
     settings.setValue("app_style_config",":/resources/style.qss");
     auto style_path = settings.value("app_style_config").toString();

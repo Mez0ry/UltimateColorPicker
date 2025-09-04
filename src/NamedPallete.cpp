@@ -6,14 +6,14 @@
 #include "Utils.hpp"
 
 
-NamedPallete::NamedPallete(const QString &pallete_name, QJsonObject color_values, QWidget *parent) : QLabel(parent), m_Height(32), m_Width(32), m_PalleteName(pallete_name), m_ColorValues(color_values), m_DeletePopup(this){
+NamedPallete::NamedPallete(const QString &pallete_name, QJsonObject color_values, QWidget *parent) : QLabel(parent),m_Size(32,32), m_PalleteName(pallete_name), m_ColorValues(color_values), m_DeletePopup(this){
     this->setToolTip(m_PalleteName);
-    this->setGeometry(0,0,m_Width,m_Height);
+    this->setGeometry(0,0,m_Size.width(),m_Size.height());
 
     this->setSizePolicy(QSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred));
 
-    this->setMaximumSize(QSize(m_Width + 122,m_Height + 122));
-    this->setMinimumSize(QSize(m_Width,m_Height));
+    this->setMaximumSize(QSize(m_Size.width() + 122,m_Size.height() + 122));
+    this->setMinimumSize(m_Size);
 
     connect(&m_DeletePopup,&DeletePopup::LeftButtonClicked,this,[=](){
         QSettings settings("Mezory", "ColorPicker");
@@ -78,7 +78,7 @@ void NamedPallete::paintEvent(QPaintEvent *){
     painter.setRenderHint(QPainter::Antialiasing, true);
 
     QRadialGradient gradient(this->rect().center(),16);
-    double fill_dx =  ((double)m_ColorValues.size() / (double)m_Height);
+    double fill_dx =  ((double)m_ColorValues.size() / (double)m_Size.height());
     int iter = 0;
     for(auto color_value : m_ColorValues){
         QColor color(color_value.toString());

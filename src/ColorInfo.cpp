@@ -1,7 +1,12 @@
 #include "ColorInfo.hpp"
-#include "mainwindow.h"
 
+#include <QMessageBox>
+#include <QClipboard>
+
+#include "mainwindow.h"
 #include <memory>
+
+#include "Utils.hpp"
 
 ColorInfo::ColorInfo(std::shared_ptr<QColor> color, QWidget *parent) : QWidget(parent), m_RgbaFormat("rgba(%r, %g, %b, %a)")
 {

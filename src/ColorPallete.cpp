@@ -1,22 +1,29 @@
 #include "ColorPallete.hpp"
 
-#include "DeletePopup.hpp"
-#include "NamedPallete.hpp"
-#include "ColoredEllipse.hpp"
-#include "AddIcon.hpp"
-#include "Utils.hpp"
+#include <QJsonDocument>
+#include <QJsonObject>
+#include <QJsonArray>
+#include <QJsonObject>
+#include <QSettings>
+#include <QPainterPath>
 #include <QLayout>
 #include <QVBoxLayout>
-
+#include <QPainterPath>
+#include <QGraphicsBlurEffect>
+#include <QGridLayout>
 #include "mainwindow.h"
-#include "ColorWheel.hpp"
 #include <QScreen>
 #include <QScrollArea>
 #include <QScrollBar>
+#include <QResizeEvent>
 
-#include <QGraphicsBlurEffect>
-#include <QGridLayout>
+#include "NamedPallete.hpp"
+#include "AddIcon.hpp"
+#include "Utils.hpp"
+
+
 #include "GridLayout.hpp"
+#include "ColoredEllipse.hpp"
 
 ColorPallete::ColorPallete(QWidget *parent) : QWidget(parent), m_AddIcon(nullptr), m_Content(nullptr)
 {
@@ -32,15 +39,15 @@ ColorPallete::ColorPallete(QWidget *parent) : QWidget(parent), m_AddIcon(nullptr
     this->setWindowFlag(Qt::Window);
     QRect desktop_rect = screen()->availableGeometry();
 
-    m_Width = desktop_rect.width() * 0.4f;
-    m_Height = desktop_rect.height() * 0.26f;
+    m_Size.setWidth( desktop_rect.width() * 0.4f);
+    m_Size.setHeight(desktop_rect.height() * 0.26f);
 
     QPoint center = desktop_rect.center();
-    this->setGeometry(center.x() - width() * 0.5, center.y() - height() * 0.5,m_Width,m_Height);
+    this->setGeometry(center.x() - width() * 0.5, center.y() - height() * 0.5,m_Size.width(),m_Size.height());
 
     this->setMinimumSize(500,500);
 
-    QRect rect{0,0,62,m_Height};
+    QRect rect{0,0,62,m_Size.height()};
     quint8 spacing = 22;
 
     m_BackgroundVBoxLayout = new QFrame(this);
@@ -162,7 +169,6 @@ ColorPallete::ColorPallete(QWidget *parent) : QWidget(parent), m_AddIcon(nullptr
                     new_colors.insert("color_" + new_index_str,new_text);
                 }
 
-
                 pallete_ptr->SetColors(new_colors);
 
                 QSettings settings("Mezory", "ColorPicker");
@@ -233,11 +239,6 @@ ColorPallete::ColorPallete(QWidget *parent) : QWidget(parent), m_AddIcon(nullptr
     });
 }
 
-ColorPallete::~ColorPallete()
-{
-
-}
-
 void ColorPallete::OnButtonClicked()
 {
     this->show();
@@ -262,13 +263,12 @@ void ColorPallete::closeEvent(QCloseEvent *event)
 
 void ColorPallete::OnResize(QSize new_size)
 {
-    m_Width = new_size.width();
-    m_Height = new_size.height();
+    m_Size = new_size;
 
-    double wx =  m_Width * 0.104;
+    double wx =  m_Size.width() * 0.104;
     wx = std::clamp(wx,(double)62,(double)100);
 
-    QRect rect(0,0,wx,new_size.height());
+    QRect rect(0,0,wx,m_Size.height());
     m_BackgroundVBoxLayout->setGeometry(rect);
     m_BackgroundVBoxLayout->layout()->setGeometry(rect);
     m_ScrollArea->setGeometry(rect);
@@ -302,6 +302,6 @@ void ColorPallete::OnResize(QSize new_size)
     }
 
     grid_layout->update();
-    this->m_AddIcon->OnParentSizeUpdate(new_size);
+    this->m_AddIcon->OnParentSizeUpdate(m_Size);
     this->update();
 }

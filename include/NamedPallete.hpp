@@ -7,14 +7,14 @@
 class NamedPallete : public QLabel{
     Q_OBJECT
 private:
-    int m_Height,m_Width;
+    QSize m_Size;
     QString m_PalleteName;
     QJsonObject m_ColorValues;
     DeletePopup m_DeletePopup;
 public:
-    explicit NamedPallete(const QString& pallete_name,QJsonObject color_values = QJsonObject(),QWidget* parent = nullptr);
+    explicit NamedPallete(const QString& pallete_name,QJsonObject color_values = QJsonObject(),QWidget* parent = Q_NULLPTR);
 
-    ~NamedPallete() = default;
+    ~NamedPallete() Q_DECL_EQ_DEFAULT;
 
     void Serialize(QJsonDocument doc, const QString& file_path);
     static void Serialize(const NamedPallete* pallete, QJsonDocument& doc, const QString& file_path);
