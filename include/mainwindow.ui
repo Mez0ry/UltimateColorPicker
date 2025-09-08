@@ -28,6 +28,9 @@
   <property name="windowTitle">
    <string>Ultimate Color Picker</string>
   </property>
+  <property name="styleSheet">
+   <string notr="true">background-color: #1B1D23;</string>
+  </property>
   <widget class="QWidget" name="centralwidget">
    <property name="enabled">
     <bool>true</bool>
@@ -124,6 +127,9 @@
               <horstretch>0</horstretch>
               <verstretch>0</verstretch>
              </sizepolicy>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">color: white;</string>
             </property>
             <property name="text">
              <string>G</string>
@@ -222,6 +228,9 @@
               <verstretch>0</verstretch>
              </sizepolicy>
             </property>
+            <property name="styleSheet">
+             <string notr="true">color: white;</string>
+            </property>
             <property name="text">
              <string>B</string>
             </property>
@@ -310,6 +319,9 @@
               <verstretch>0</verstretch>
              </sizepolicy>
             </property>
+            <property name="styleSheet">
+             <string notr="true">color: white;</string>
+            </property>
             <property name="text">
              <string>R</string>
             </property>
@@ -394,6 +406,9 @@
               <horstretch>0</horstretch>
               <verstretch>0</verstretch>
              </sizepolicy>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">color: white;</string>
             </property>
             <property name="text">
              <string>A</string>
@@ -547,6 +562,9 @@
                <width>30</width>
                <height>30</height>
               </size>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">color: white;</string>
              </property>
              <property name="text">
               <string>Hex: </string>
@@ -814,8 +832,14 @@ QPushButton:focus {background: rgba(0, 0, 0, 0);}</string>
               <pointsize>8</pointsize>
              </font>
             </property>
+            <property name="styleSheet">
+             <string notr="true">color: white;</string>
+            </property>
             <property name="sizeAdjustPolicy">
              <enum>QComboBox::SizeAdjustPolicy::AdjustToContents</enum>
+            </property>
+            <property name="placeholderText">
+             <string/>
             </property>
            </widget>
            <widget class="QWidget" name="gridLayoutWidget">

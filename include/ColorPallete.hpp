@@ -17,10 +17,11 @@ class ColorPallete : public QWidget{
     Q_OBJECT
 private:
     QSize m_Size;
-    QFrame* m_BackgroundVBoxLayout;
-    QScrollArea* m_ScrollArea;
-    AddIcon* m_AddIcon;
-    QFrame* m_Content;
+    QFrame* m_BackgroundVBoxLayout{nullptr};
+    QScrollArea* m_ScrollArea{nullptr};
+    AddIcon* m_AddIcon{nullptr};
+
+    QFrame* m_Content{nullptr};
 public:
     explicit ColorPallete(QWidget* parent = Q_NULLPTR);
     ~ColorPallete() Q_DECL_EQ_DEFAULT;

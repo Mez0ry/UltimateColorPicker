@@ -53,11 +53,11 @@ namespace internal{
 
     inline QVector3D get_normalized_rgb(const QRgb& rgb);
 
-    inline float apply_gamma_encode(float x);
+    inline float apply_gamma_encode(const float x);
     void apply_gamma_encode(QVector<qreal>& vec);
     void apply_gamma_encode(QVector3D& vec);
 
-    inline float apply_gamma_decode(float x);
+    inline float apply_gamma_decode(const float x);
     void apply_gamma_decode(QVector<qreal>& vec);
     void apply_gamma_decode(QVector3D& normalized_rgb);
 } //!internal

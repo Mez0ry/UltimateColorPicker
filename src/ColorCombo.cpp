@@ -8,14 +8,9 @@
 #include "ColorCell.hpp"
 #include "Utils.hpp"
 
-
-ColorCombo::ColorCombo(QWidget *parent) : QWidget(parent), m_BaseColor(nullptr){
+ColorCombo::ColorCombo(QWidget *parent) : QWidget(parent){
     auto main_window = static_cast<MainWindow*>(Utils::GetMainWindow());
     auto ui = main_window->GetUi();
-
-    if(!ui){
-        qCritical() << "ui context is nullptr" << '\n';
-    }
 
     this->m_ComboBox = ui->ColorCombsBox;
 

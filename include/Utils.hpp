@@ -21,7 +21,11 @@ namespace Utils{
 
     float CalculateLuminance(QColor color);
 
-    QColor GetInveseredColor(QColor color, int inverse_if_less_than_val);
+    /*
+        @param pred_luminance - if pred is true inverse would be towards white if false towards black
+        @return inversed color
+    */
+    QColor GetInveseredColorIf(QColor color, std::function<bool(int)> pred_luminance = [](int luminance){return (luminance < 40);});
 
     namespace Font{
         int GetAdaptiveFontSize(int desired_font_size, float standard_dpi = 96.0);

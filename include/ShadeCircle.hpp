@@ -9,15 +9,16 @@
 class ShadeCircle : public QWidget{
     Q_OBJECT
 private:
-    QColor m_RelativeColor;
+    QColor m_RelativeColor{QColor(55,55,255,255)};
     std::shared_ptr<QColor> m_SelectedShadeColor;
-    quint16 m_Margin;
-    QPoint m_MousePosition;
+    int m_Radius{37};
+    bool m_IsChoosingColor{false};
+    int m_ShadesSteps{380};
 
+    QPoint m_MousePosition;
     QPoint m_dragStart;
-    bool m_IsChoosingColor;
 public:
-   explicit ShadeCircle(QWidget* parent = Q_NULLPTR);
+    explicit ShadeCircle(QWidget* parent = Q_NULLPTR);
     ~ShadeCircle() Q_DECL_EQ_DEFAULT;
 
     void SetRelativeColor(QColor relative_color);

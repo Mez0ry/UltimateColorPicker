@@ -12,10 +12,6 @@ NavigationBar::NavigationBar(QWidget *parent) : QWidget(parent)
     auto main_window = static_cast<MainWindow*>(Utils::GetMainWindow());
     auto ui = main_window->GetUi();
 
-    if(!ui){
-        qCritical() << "ui context is nullptr" << '\n';
-    }
-
     ui->ColorPickerButton->setIcon(QIcon(":/resources/icon_color_picker_3.png"));
     ui->PalleteButton->setIcon(QIcon(":/resources/pallete_button.png"));
     ui->donation_button->setIcon(QIcon(":/resources/donation.png"));

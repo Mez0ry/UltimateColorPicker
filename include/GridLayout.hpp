@@ -11,7 +11,7 @@ class GridLayout : public QGridLayout{
 private:
     QSize m_GridSize;
 public:
-    GridLayout(int rows, int cols,QWidget* parent = Q_NULLPTR);
+    GridLayout(int rows, int cols, QWidget* parent = Q_NULLPTR);
 
     ~GridLayout() Q_DECL_EQ_DEFAULT;
 
@@ -22,65 +22,14 @@ public:
     QSize GetGridSize() const;
     void SetGridSize(QSize size);
 
-    const QPoint GetNextInsertionIndex() const;
+    const QPoint GetNextInsertionPos() const;
 
     void Clear();
 
     bool IsEmpty() const;
 
-    quint32 GetMaxWidth() const{
-        if(IsEmpty()){
-            return 0;
-        }
-
-        quint32 res = 0;
-        int count = 0;
-        auto spacing = this->spacing();
-
-        while(count < this->count()){
-            auto* item = this->itemAt(count);
-
-            if( item ) {
-                QWidget* widget = item->widget();
-                if(widget)
-                    res += (widget->width() + spacing);
-            }
-
-            ++count;
-        }
-
-        return res;
-    }
-
-    quint32 GetRowTotalWidth() const{
-        if(isEmpty()){
-            return 0;
-        }
-
-        auto next_insert_index = GetNextInsertionIndex();
-        auto width_size = (next_insert_index.x() > 0 && next_insert_index.y() == 0) ? next_insert_index.x() - 1 : m_GridSize.width();
-        auto spacing = this->spacing();
-
-        if(width_size >= this->count()){
-            width_size = this->count() - 1;
-        }
-
-        int i = width_size;
-        quint32 res = 0;
-
-        for(; i >= 0;--i){
-            auto* item = this->itemAt(i);
-
-            if( item ) {
-                QWidget* widget = item->widget();
-                res += widget->width() + spacing;
-            }
-        }
-
-        return res;
-
-    }
-
+    quint32 GetMaxWidth() const;
+    quint32 GetRowTotalWidth() const;
 public slots:
     void UpdateWidgetsToGridSize(QSize new_size);
 signals:

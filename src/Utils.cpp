@@ -1,6 +1,7 @@
 #include "Utils.hpp"
-#include <QScreen>
 #include <QFile>
+#include <QScreen>
+#include <functional>
 
 QMainWindow *Utils::GetMainWindow()
 {
@@ -95,7 +96,6 @@ std::vector<QColor> Utils::GetSplitComplementary(QColor base_color)
 
     for(auto iterations_count = 0;iterations_count < 2; iterations_count++){
         res.push_back(GetComplementaryFromFactor(base_color,hue_angles[iterations_count]));
-
     }
 
     return res;
@@ -105,7 +105,7 @@ int Utils::Font::GetAdaptiveFontSize(int desired_font_size, float standard_dpi)
 {
     QScreen* screen = QGuiApplication::primaryScreen();
     qreal dpi = screen->logicalDotsPerInch();
-    return (desired_font_size * (dpi /standard_dpi));
+    return (desired_font_size * (dpi / standard_dpi));
 }
 
 QJsonDocument Utils::Json::LoadJson(QString file_path)
@@ -135,10 +135,10 @@ void Utils::Json::SaveJson(QJsonDocument doc, QString file_path)
     file.write(doc.toJson());
 }
 
-QColor Utils::GetInveseredColor(QColor color, int inverse_if_less_than_val)
+QColor Utils::GetInveseredColorIf(QColor color, std::function<bool(int)> pred_luminance)
 {
     float luminance = CalculateLuminance(color);
-    QString inverse = (luminance < inverse_if_less_than_val ) ? "#fff" : "#000";
+    QString inverse = (pred_luminance(luminance)) ? "#fff" : "#000";
 
     QString base_name = color.name();
     base_name.replace(0, inverse.size(), inverse);
@@ -148,5 +148,5 @@ QColor Utils::GetInveseredColor(QColor color, int inverse_if_less_than_val)
 
 float Utils::CalculateLuminance(QColor color)
 {
-    return (float) (0.2126 * color.red() + 0.7152 * color.green() + 0.0722 * color.blue());
+    return static_cast<float>(0.2126 * color.red() + 0.7152 * color.green() + 0.0722 * color.blue());
 }

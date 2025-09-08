@@ -11,7 +11,8 @@ private:
 public:
     ColoredEllipse(QColor color = Qt::white,int radius = 22, QWidget* parent = Q_NULLPTR);
     ~ColoredEllipse() Q_DECL_EQ_DEFAULT;
-
+signals:
+    void OnRightClick();
 protected:
     void paintEvent(QPaintEvent*) Q_DECL_OVERRIDE;
     void mousePressEvent(QMouseEvent *event) Q_DECL_OVERRIDE;

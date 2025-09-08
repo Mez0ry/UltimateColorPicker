@@ -24,9 +24,8 @@ public:
 
     const QString& GetPalleteName() const;
 signals:
-    void JsonConfigUpdate(NamedPallete* pallete_to_remove);
+    void JsonConfigUpdate(NamedPallete* const pallete_to_remove);
     void Clicked();
-
 protected:
     void mousePressEvent(QMouseEvent* event) Q_DECL_OVERRIDE;
     void paintEvent(QPaintEvent*) Q_DECL_OVERRIDE;

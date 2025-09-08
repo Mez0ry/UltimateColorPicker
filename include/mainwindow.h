@@ -8,6 +8,8 @@
 
 #include "ui_mainwindow.h"
 
+class NavigationBar;
+
 namespace Ui {
     class MainWindow;
 }
@@ -31,6 +33,7 @@ protected:
     }
 private:
     Ui::MainWindow *m_Ui;
+    QSharedPointer<NavigationBar> m_NavBar;
 };
 
 #endif // MAINWINDOW_H

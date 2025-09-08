@@ -50,26 +50,28 @@ void ColorPicker::OnButtonPush()
 }
 
 QRect ColorPicker::currentScreenLogicalGeometry() const {
-    QScreen* s = QGuiApplication::screenAt(QCursor::pos());
+    const QScreen* s = QGuiApplication::screenAt(QCursor::pos());
     if (!s) s = QGuiApplication::primaryScreen();
     return s ? s->geometry() : QRect(0, 0, 0, 0);
 }
 
 void ColorPicker::sampleUnderCursor() {
     m_CursorGlobal = QCursor::pos();
-    QScreen* s = QGuiApplication::screenAt(m_CursorGlobal);
-    if (!s) return;
+    QScreen* const s = QGuiApplication::screenAt(m_CursorGlobal);
+
+    if (!s)
+        return;
 
 #if defined(Q_OS_WIN)
     const QRect vgeom = QGuiApplication::primaryScreen()->virtualGeometry();
-    int gx = std::clamp(m_CursorGlobal.x(), vgeom.left(),  vgeom.right());
-    int gy = std::clamp(m_CursorGlobal.y(), vgeom.top(),   vgeom.bottom());
-    QPixmap px1 = s->grabWindow(0, gx, gy, 1, 1);
+    const int gx = std::clamp(m_CursorGlobal.x(), vgeom.left(),  vgeom.right());
+    const int gy = std::clamp(m_CursorGlobal.y(), vgeom.top(),   vgeom.bottom());
+    const QPixmap px1 = s->grabWindow(0, gx, gy, 1, 1);
 
     if (px1.isNull())
         return;
 
-    QImage i1 = px1.toImage();
+    const QImage i1 = px1.toImage();
     if (i1.isNull())
         return;
 
@@ -111,7 +113,7 @@ void ColorPicker::paintEvent(QPaintEvent*) {
     p.setRenderHint(QPainter::Antialiasing, true);
 
     const QPoint center = mapFromGlobal(m_CursorGlobal);
-    int dia = m_Radius * 2;
+    const int dia = m_Radius * 2;
 
     QPainterPath ring;
     ring.setFillRule(Qt::OddEvenFill);
@@ -139,7 +141,7 @@ void ColorPicker::paintEvent(QPaintEvent*) {
 
     const QString hud = hex + "  •  " + rgb + "   (Click to pick, Esc to cancel)";
 
-    QRect tr(20, 20, width() - 40, 40);
+    const QRect tr(20, 20, width() - 40, 40);
     p.setPen(Qt::NoPen);
     p.setBrush(QColor(0,0,0,160));
     p.drawRoundedRect(tr.adjusted(-6,-6,6,6), 8, 8);
@@ -173,12 +175,10 @@ void ColorPicker::mousePressEvent(QMouseEvent* e) {
 }
 
 void ColorPicker::mouseReleaseEvent(QMouseEvent* e) {
-    qInfo() << "mouse released" << '\n';
     e->accept();
 }
 
 void ColorPicker::keyReleaseEvent(QKeyEvent* e) {
-    qInfo() << "keyReleaseEvent " << '\n';
     if (e->key() == Qt::Key_Escape) {
         releaseMouse();
         releaseKeyboard();
@@ -187,7 +187,6 @@ void ColorPicker::keyReleaseEvent(QKeyEvent* e) {
 }
 
 bool ColorPicker::event(QEvent* ev) {
-     //qInfo() << "event " << '\n';
     if (ev->type() == QEvent::ScreenChangeInternal) {
         setGeometry(currentScreenLogicalGeometry());
     }

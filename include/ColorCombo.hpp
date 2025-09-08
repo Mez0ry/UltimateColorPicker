@@ -19,12 +19,11 @@ enum class ColorType : quint8{
 class ColorCombo : public QWidget{
     Q_OBJECT
 private:
-    QColor* m_BaseColor;
-    QComboBox* m_ComboBox;
-    QGridLayout* m_ColorComboGrid;
+    QColor* m_BaseColor{nullptr};
+    QComboBox* m_ComboBox{nullptr};
+    QGridLayout* m_ColorComboGrid{nullptr};
     int m_CurrentComboIndex{0};
     std::unordered_map<int,std::vector<QColor>> m_ColorTypesMap;
-
 public:
     explicit ColorCombo(QWidget* parent = Q_NULLPTR);
     ~ColorCombo() Q_DECL_EQ_DEFAULT;

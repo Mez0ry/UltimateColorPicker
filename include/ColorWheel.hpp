@@ -5,8 +5,8 @@
 #include "ShadeCircle.hpp"
 #include "ColorInfo.hpp"
 #include "ColorCombo.hpp"
-namespace internal{
 
+namespace internal{
 
 class IColorWheel{
 public:
@@ -67,8 +67,8 @@ class ColorWheel : public QWidget{
 private:
     const QSize m_Size{150,150};
     int m_Radius{m_Size.width() / 2};
-    quint16 m_Margin;
-    std::shared_ptr<QColor> m_SelectedColor;
+    quint16 m_Margin{10};
+    std::shared_ptr<QColor> m_SelectedColor{nullptr};
 
     std::unordered_map<size_t,std::shared_ptr<internal::IColorWheel>> m_ColorWheels;
     std::shared_ptr<internal::IColorWheel> m_CurrentColorWheel{nullptr};
@@ -108,9 +108,9 @@ signals:
 template<typename _ColorWheelType>
 inline bool ColorWheel::Contains()
 {
-    hash_code_t hash = typeid(_ColorWheelType).hash_code();
+    const hash_code_t hash = typeid(_ColorWheelType).hash_code();
 
-    return m_ColorWheels.count(hash) > 0;
+    return (m_ColorWheels.count(hash) > 0);
 }
 
 template<typename _ColorWheelType>

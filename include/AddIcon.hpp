@@ -6,7 +6,6 @@
 class PalleteNameSpecifierPopup : public QLineEdit{
     Q_OBJECT
 private:
-
 public:
     PalleteNameSpecifierPopup(QWidget* parent = Q_NULLPTR);
 
@@ -33,7 +32,6 @@ public:
     void OnParentSizeUpdate(QSize size);
 
     void SetPlaceHolderText(QString placeholder);
-
 signals:
     void WasNotNamed();
     void IsNamed(QString new_name);

@@ -15,8 +15,8 @@ class ColorPicker : public QWidget {
 private:
     QMetaObject::Connection m_TimerConnection;
     QTimer* m_Timer {Q_NULLPTR};
-    QColor  m_SelectedColor {Qt::black};
-    QPixmap m_MagnifierSrc;
+    QColor  m_SelectedColor {Qt::white};
+    //QPixmap m_MagnifierSrc;
     QPoint  m_CursorGlobal;
     int     m_Radius {42};
     int     m_Grid   {10};

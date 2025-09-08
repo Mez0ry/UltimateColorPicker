@@ -19,17 +19,9 @@
 
 #include "ColorConversion.hpp"
 #include "Utils.hpp"
-#include "mainwindow.h"
 
 ColorWheel::ColorWheel(QWidget *parent, QColor selected_color, quint16 margin) : QWidget(parent), m_ShadeCircle(this), m_ColorInfo(m_ShadeCircle.GetSelectedShade(),this){
     this->setMouseTracking(false);
-
-    auto main_window = static_cast<MainWindow*>(Utils::GetMainWindow());
-    auto ui = main_window->GetUi();
-
-    if(!ui){
-        qCritical() << "ui context is nullptr" << '\n';
-    }
 
     m_SelectedColor = std::make_shared<QColor>(selected_color);
     this->m_ShadeCircle.SetShadeColor(std::make_shared<QColor>(*m_SelectedColor));
@@ -83,7 +75,7 @@ QColor ColorWheel::GetColorAtPoint(QPoint point, float radius)
 }
 
 void ColorWheel::paintEvent(QPaintEvent * event){
-    auto center = QPointF(this->width() / 2, this->height() / 2);
+    const auto center = QPointF(this->width() / 2, this->height() / 2);
     QPainter painter(this);
 
     painter.setRenderHints(QPainter::Antialiasing);
@@ -105,7 +97,7 @@ void ColorWheel::paintEvent(QPaintEvent * event){
     const QPoint final_ellipse_pos(center.x() + m_Radius * std::cos(-angle ) , center.y() + m_Radius * std::sin(-angle ));
 
     const int radius = 7;
-    auto inversed_color = Utils::GetInveseredColor(*m_SelectedColor,30);
+    const auto inversed_color = Utils::GetInveseredColorIf(*m_SelectedColor,[&](int luminance){ return (luminance < 30 );});
     painter.setPen(inversed_color);
 
     painter.setBrush(*m_SelectedColor);
@@ -131,7 +123,7 @@ void ColorWheel::mouseMoveEvent(QMouseEvent* event){
 void ColorWheel::mousePressEvent( QMouseEvent* event){
     m_LastCursorPos = event->pos();
 
-    *this->m_SelectedColor = GetColorAtPoint(m_LastCursorPos,m_Radius );
+    *this->m_SelectedColor = GetColorAtPoint(m_LastCursorPos, m_Radius);
     OnColorChange();
 }
 
@@ -199,10 +191,10 @@ QColor internal::OklabColorWheel::GetColorAtPoint(QPoint point, float radius) co
     double angle = (qAtan2(point.x() - radius, point.y() - radius) + M_PI);
     angle = angle + M_PI_2;
 
-    double normalized_angle = std::fmod(angle, 2 * M_PI) / (2 * M_PI);
+    const double normalized_angle = std::fmod(angle, 2 * M_PI) / (2 * M_PI);
 
-    double a_component = m_CurrentChroma * std::cos(normalized_angle * 2 * M_PI);
-    double b_component = m_CurrentChroma * std::sin(normalized_angle * 2 * M_PI);
+    const double a_component = m_CurrentChroma * std::cos(normalized_angle * 2 * M_PI);
+    const double b_component = m_CurrentChroma * std::sin(normalized_angle * 2 * M_PI);
 
     return Utils::ColorConversion::oklab_to_rgb(m_CurrentLightness, a_component, b_component);
 }

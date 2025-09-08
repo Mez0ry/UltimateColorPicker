@@ -9,12 +9,16 @@
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)  , m_Ui(new Ui::MainWindow)
 {
+    if(!m_Ui){
+        qCritical() << "ui context is nullptr" << '\n';
+    }
+
     m_Ui->setupUi(this);
+
+    m_NavBar = QSharedPointer<NavigationBar>(new NavigationBar(m_Ui->NavigationWidget));
+
     this->centralWidget()->setMouseTracking(true);
     m_Ui->formLayout->addWidget(new ColorWheel());
-    QPointer nav_bar = new NavigationBar(m_Ui->NavigationWidget);
-    Q_UNUSED(nav_bar);
-
     QSettings settings("Mezory", "ColorPicker");
 
     settings.beginGroup("ConfigFiles");

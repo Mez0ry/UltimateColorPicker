@@ -8,26 +8,22 @@
 
 #include "Utils.hpp"
 
-ColorInfo::ColorInfo(std::shared_ptr<QColor> color, QWidget *parent) : QWidget(parent), m_RgbaFormat("rgba(%r, %g, %b, %a)")
+ColorInfo::ColorInfo(std::shared_ptr<QColor> color, QWidget *parent) : QWidget(parent)
 {
     SetColorContext(color);
 
     auto main_window = static_cast<MainWindow*>(Utils::GetMainWindow());
     auto ui = main_window->GetUi();
 
-    if(!ui){
-        qCritical() << "ui context is nullptr" << '\n';
-    }
+    constexpr double line_edit_height_divider = 2.2;
+    const int half_height = ui->rgba_LineEdit->height() / line_edit_height_divider;
 
-    int half_height = ui->rgba_LineEdit->height() / 2.2;
-    qBound(5, half_height, 12);
+    const QString border_radius_str = QString("border-radius: %1px;").arg(half_height);
 
-    QString border_radius = QString("border-radius: %1px;").arg(half_height);
+    ui->rgba_LineEdit->setStyleSheet(border_radius_str);
+    ui->hex_value->setStyleSheet(border_radius_str);
 
-    ui->rgba_LineEdit->setStyleSheet(border_radius);
-    ui->hex_value->setStyleSheet(border_radius);
-
-    QAction * rgba_line_edit_action = ui->rgba_LineEdit->addAction(QIcon(":/resources/copy_icon_1.png"), QLineEdit::TrailingPosition);
+    QAction* const rgba_line_edit_action = ui->rgba_LineEdit->addAction(QIcon(":/resources/copy_icon_1.png"), QLineEdit::TrailingPosition);
 
     connect(rgba_line_edit_action,&QAction::triggered,this,[=](bool checked){
         Q_UNUSED(checked);
@@ -71,7 +67,7 @@ ColorInfo::ColorInfo(std::shared_ptr<QColor> color, QWidget *parent) : QWidget(p
     });
 
 
-    QAction * hex_value_action = ui->hex_value->addAction(QIcon(":/resources/copy_icon_1.png"), QLineEdit::TrailingPosition);
+    QAction* const hex_value_action = ui->hex_value->addAction(QIcon(":/resources/copy_icon_1.png"), QLineEdit::TrailingPosition);
 
     connect(hex_value_action,&QAction::triggered,this,[=](bool checked){
         Q_UNUSED(checked);
@@ -115,10 +111,6 @@ void ColorInfo::SetupColorInfo()
     auto main_window = static_cast<MainWindow*>(Utils::GetMainWindow());
     auto ui = main_window->GetUi();
 
-    if(!ui){
-        qCritical() << "ui context is nullptr" << '\n';
-    }
-
     ui->hex_value->setText(m_ColorContext->name());
 
     ui->r_hSlider->setValue(m_ColorContext->red());
@@ -136,16 +128,8 @@ void ColorInfo::SetupColorInfo()
 
 void ColorInfo::SetupConnections()
 {
-    /**@brief
-     * @TODO set color outside of this class for shades/hue/color wheel
-    */
-
     auto main_window = static_cast<MainWindow*>(Utils::GetMainWindow());
     auto ui = main_window->GetUi();
-
-    if(!ui){
-        qCritical() << "ui context is nullptr" << '\n';
-    }
 
     m_Connections.push_back(connect(ui->r_hSlider, &QSlider::valueChanged, this,[=](int red){
         this->m_ColorContext->setRed(red);
@@ -218,5 +202,6 @@ void ColorInfo::DisconnectAll()
     for(auto& connection : m_Connections){
         QObject::disconnect(connection);
     }
+
     m_Connections.clear();
 }

@@ -7,18 +7,18 @@ GridLayout::GridLayout(int rows, int cols, QWidget *parent) : QGridLayout(parent
 }
 
 void GridLayout::PushWidget(QWidget *w, Qt::Alignment alignment){
-    auto p = GetNextInsertionIndex();
+    auto p = GetNextInsertionPos();
     this->addWidget(w, p.y(),p.x(),alignment);
 }
 
 void GridLayout::PushWidget(QWidget *w, int row_span, int column_span, Qt::Alignment alignment){
 
-    auto p = GetNextInsertionIndex();
+    auto p = GetNextInsertionPos();
     this->addWidget(w, p.y(),p.x(),row_span,column_span,alignment);
 }
 
 void GridLayout::PushItem(QLayoutItem *item, int row_span, int column_span, Qt::Alignment alignment){
-    auto p = GetNextInsertionIndex();
+    auto p = GetNextInsertionPos();
 
     this->addItem(item,p.y(),p.x(),row_span,column_span,alignment);
 }
@@ -51,7 +51,63 @@ void GridLayout::Clear()
 
 bool GridLayout::IsEmpty() const
 {
-    return (GetNextInsertionIndex().x() == 0 && GetNextInsertionIndex().y() == 0);
+    return (GetNextInsertionPos().x() == 0 && GetNextInsertionPos().y() == 0);
+}
+
+quint32 GridLayout::GetMaxWidth() const
+{
+    if (IsEmpty()) {
+        return 0;
+    }
+
+    quint32 res = 0;
+    int count = 0;
+    auto spacing = this->spacing();
+
+    while (count < this->count()) {
+        auto* item = this->itemAt(count);
+
+        if (item) {
+            QWidget* widget = item->widget();
+            if (widget)
+                res += (widget->width() + spacing);
+        }
+
+        ++count;
+    }
+
+    return res;
+}
+
+quint32 GridLayout::GetRowTotalWidth() const
+{
+    if (isEmpty()) {
+        return 0;
+    }
+
+    auto next_insert_index = GetNextInsertionPos();
+    auto width_size = (next_insert_index.x() > 0 && next_insert_index.y() == 0)
+                          ? next_insert_index.x() - 1
+                          : m_GridSize.width();
+    auto spacing = this->spacing();
+
+    if (width_size >= this->count()) {
+        width_size = this->count() - 1;
+    }
+
+    int i = width_size;
+    quint32 res = 0;
+
+    for (; i >= 0; --i) {
+        auto* item = this->itemAt(i);
+
+        if (item) {
+            QWidget* widget = item->widget();
+            res += widget->width() + spacing;
+        }
+    }
+
+    return res;
 }
 
 void GridLayout::UpdateWidgetsToGridSize(QSize new_size)
@@ -93,7 +149,7 @@ void GridLayout::UpdateWidgetsToGridSize(QSize new_size)
     }
 }
 
-const QPoint GridLayout::GetNextInsertionIndex() const {
+const QPoint GridLayout::GetNextInsertionPos() const {
     if(this->count() == 0){
         return QPoint(0,0);
     }

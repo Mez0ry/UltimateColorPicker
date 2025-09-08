@@ -12,7 +12,7 @@ QVector3D Utils::ColorConversion::internal::get_normalized_rgb(const QRgb &rgb)
                      normalize_component(qBlue(rgb)));
 }
 
-float Utils::ColorConversion::internal::apply_gamma_encode(float x)
+float Utils::ColorConversion::internal::apply_gamma_encode(const float x)
 {
     return (x <= 0.0031308) ? 12.92 * x : 1.055 * std::pow(x, 1.0 / 2.4) - 0.055;
 }
@@ -31,7 +31,7 @@ void Utils::ColorConversion::internal::apply_gamma_encode(QVector3D &vec)
     vec.setZ(apply_gamma_encode(vec.z()));
 }
 
-float Utils::ColorConversion::internal::apply_gamma_decode(float x)
+float Utils::ColorConversion::internal::apply_gamma_decode(const float x)
 {
     return (x > 0.04045) ? std::pow((x + 0.055) / 1.055, 2.4) : x / 12.92;
 }
@@ -52,7 +52,7 @@ void Utils::ColorConversion::internal::apply_gamma_decode(QVector3D &normalized_
 
 QVector3D Utils::ColorConversion::rgb_to_xyz(const QRgb &rgb)
 {
-    int scale_factor = 100;
+    const int scale_factor = 100;
 
     QVector3D normalized_rgb(internal::get_normalized_rgb(rgb));
     internal::apply_gamma_decode(normalized_rgb);

@@ -13,7 +13,6 @@ public:
     void OnRightClick(int border_length = 19);
 signals:
     void LeftButtonClicked();
-
 protected:
     void mousePressEvent(QMouseEvent * event) Q_DECL_OVERRIDE;
 
