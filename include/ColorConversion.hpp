@@ -65,8 +65,8 @@ namespace internal{
 inline float normalize_component(uint8_t component);
 inline QVector3D rgb_to_u8_range(QVector3D srgb);
 
-QVector3D rgb_to_xyz(const QRgb &rgb);
-QRgb xyz_to_rgb(QVector3D xyz);
+QVector3D rgb_to_xyz(const QRgb &rgb, const float scale_factor = 100);
+QRgb xyz_to_rgb(QVector3D xyz, const float unscale_factor = 100);
 
 /*
 * @return scaled xyz

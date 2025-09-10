@@ -1,4 +1,6 @@
-#pragma once
+#ifndef __COLOR_PICKER_HPP__
+#define __COLOR_PICKER_HPP__
+
 #include <QWidget>
 #include <QColor>
 #include <QPixmap>
@@ -43,3 +45,5 @@ private:
     void sampleUnderCursor();
     QRect currentScreenLogicalGeometry() const;
 };
+
+#endif //!__COLOR_PICKER_HPP__

@@ -14,6 +14,8 @@ find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets LinguistTools)
 
 set(TS_FILES ts_files/UltimateColorPicker_ru_RU.ts)
 
+option(BUILD_TESTS "Build tests" OFF)
+
 set(PROJECT_SOURCES
         src/main.cpp
         src/mainwindow.cpp
@@ -71,6 +73,8 @@ else()
     if(${CMAKE_BUILD_TYPE} STREQUAL "Debug")
         list(APPEND CompileOptions "-Werror" )
         message(${CompileOptions})
+
+
     endif()
         message(${CompileOptions})
         target_compile_options(UltimateColorPicker PRIVATE ${CompileOptions})
@@ -90,7 +94,12 @@ set_target_properties(UltimateColorPicker PROPERTIES
     WIN32_EXECUTABLE TRUE
 )
 
+if(BUILD_TESTS)
+    add_subdirectory(Tests)
+endif()
+
 include(GNUInstallDirs)
+
 install(TARGETS UltimateColorPicker
     BUNDLE DESTINATION .
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}

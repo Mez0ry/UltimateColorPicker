@@ -33,7 +33,11 @@ void Utils::ColorConversion::internal::apply_gamma_encode(QVector3D &vec)
 
 float Utils::ColorConversion::internal::apply_gamma_decode(const float x)
 {
-    return (x > 0.04045) ? std::pow((x + 0.055) / 1.055, 2.4) : x / 12.92;
+    if(x < 0){
+        throw std::invalid_argument("negative input");
+    }
+
+    return (x > 0.04045) ? std::pow((x + 0.055) / 1.055f, 1.0f / 2.4f) : x / 12.92;
 }
 
 void Utils::ColorConversion::internal::apply_gamma_decode(QVector<qreal> &vec)
@@ -50,10 +54,8 @@ void Utils::ColorConversion::internal::apply_gamma_decode(QVector3D &normalized_
     normalized_rgb.setZ(apply_gamma_decode(normalized_rgb.z()));
 }
 
-QVector3D Utils::ColorConversion::rgb_to_xyz(const QRgb &rgb)
+QVector3D Utils::ColorConversion::rgb_to_xyz(const QRgb &rgb, float scale_factor)
 {
-    const int scale_factor = 100;
-
     QVector3D normalized_rgb(internal::get_normalized_rgb(rgb));
     internal::apply_gamma_decode(normalized_rgb);
 
@@ -67,10 +69,9 @@ QVector3D Utils::ColorConversion::rgb_to_u8_range(QVector3D srgb)
                      std::round(std::clamp((float) (srgb.z() * 255.0), 0.0f, 255.0f)));
 }
 
-QRgb Utils::ColorConversion::xyz_to_rgb(QVector3D xyz)
+QRgb Utils::ColorConversion::xyz_to_rgb(QVector3D xyz, const float unscale_factor)
 {
-
-    QVector3D srgb = internal::ConversionMatricies::xyz_to_rgb_mat().map(xyz / 100);
+    QVector3D srgb = internal::ConversionMatricies::xyz_to_rgb_mat().map((unscale_factor != 0) ? xyz / unscale_factor : xyz);
     internal::apply_gamma_encode(srgb);
     srgb = rgb_to_u8_range(srgb);
 
@@ -95,5 +96,5 @@ QVector3D Utils::ColorConversion::oklab_to_xyz(double L, double a, double b) {
 
     const float x_w = 0.95047, y_w = 1.0, z_w = 1.08883;
 
-    return QVector3D{x_p * x_w, y_p * y_w, z_p * z_w};
+    return QVector3D{(x_p * x_w),(y_p * y_w), (z_p * z_w)};
 }
