@@ -34,6 +34,7 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         application.qrc
         include/ColorConversion.hpp
         src/ColorConversion.cpp
+
     )
 
     target_include_directories(UltimateColorPicker PRIVATE  include)

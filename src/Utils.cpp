@@ -2,6 +2,7 @@
 #include <QFile>
 #include <QScreen>
 #include <functional>
+#include <QJsonObject>
 
 QMainWindow *Utils::GetMainWindow()
 {
@@ -108,11 +109,10 @@ int Utils::Font::GetAdaptiveFontSize(int desired_font_size, float standard_dpi)
     return (desired_font_size * (dpi / standard_dpi));
 }
 
-QJsonDocument Utils::Json::LoadJson(QString file_path)
+QJsonDocument Utils::Json::LoadJson(QFile& file)
 {
-    QFile file(file_path);
     if(!file.open(QFile::ReadOnly)){
-        qCritical() << "failed to open a file, file_path: " << file_path  << '\n';
+        qCritical() << "failed to open a file, file name: " << file.fileName()  << '\n';
     }
 
     QJsonParseError parse_error;
@@ -149,4 +149,15 @@ QColor Utils::GetInveseredColorIf(QColor color, std::function<bool(int)> pred_lu
 float Utils::CalculateLuminance(QColor color)
 {
     return static_cast<float>(0.2126 * color.red() + 0.7152 * color.green() + 0.0722 * color.blue());
+}
+
+void Utils::Json::RemoveKeyFromJsonFileAndSave(const QString& json_file_path, const QString &key) {
+    QFile file(json_file_path);
+    auto json_doc = Utils::Json::LoadJson(file);
+    auto root_obj = json_doc.object();
+    root_obj.remove(key);
+    json_doc.setObject(root_obj);
+
+    Utils::Json::SaveJson(json_doc, json_file_path);
+
 }

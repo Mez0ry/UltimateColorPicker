@@ -187,7 +187,7 @@ void ColorInfo::SetupConnections()
         ui->hex_value,&QLineEdit::editingFinished,[=](){
             auto new_hex_text = ui->hex_value->text();
             QRegularExpression hex_is_valid("^#(?:[0-9a-fA-F]{3}){1,2}$");
-            if(!hex_is_valid.match(new_hex_text).hasMatch()){
+            if(!hex_is_valid.match(new_hex_text).hasMatch() || !QColor::isValidColorName(new_hex_text)){
                 qWarning() << "invalid hex code" << '\n';
                 return;
             }

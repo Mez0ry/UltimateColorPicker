@@ -634,10 +634,17 @@
               <x>30</x>
               <y>0</y>
               <width>271</width>
-              <height>161</height>
+              <height>177</height>
              </rect>
             </property>
-            <layout class="QFormLayout" name="formLayout"/>
+            <layout class="QFormLayout" name="formLayout">
+             <item row="0" column="0" colspan="2">
+              <widget class="QStackedWidget" name="color_wheel_types">
+               <widget class="QWidget" name="page"/>
+               <widget class="QWidget" name="page_2"/>
+              </widget>
+             </item>
+            </layout>
            </widget>
           </widget>
           <widget class="QWidget" name="NavigationWidget" native="true">

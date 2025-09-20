@@ -2,13 +2,13 @@
 #include <QSettings>
 #include <QPainter>
 #include <QMouseEvent>
+#include<QFile>
 
 #include "Utils.hpp"
 
-
-NamedPallete::NamedPallete(const QString &pallete_name, QJsonObject color_values, QWidget *parent) : QLabel(parent),m_Size(32,32), m_PalleteName(pallete_name), m_ColorValues(color_values), m_DeletePopup(this){
+NamedPallete::NamedPallete(const QString &pallete_name, QJsonObject color_values, QWidget *parent) : QLabel(parent), m_Size(32,32), m_PalleteName(pallete_name), m_ColorValues(color_values), m_DeletePopup(this){
     this->setToolTip(m_PalleteName);
-    this->setGeometry(0,0,m_Size.width(),m_Size.height());
+    this->setGeometry(0, 0, m_Size.width(), m_Size.height());
 
     this->setSizePolicy(QSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred));
 
@@ -16,20 +16,10 @@ NamedPallete::NamedPallete(const QString &pallete_name, QJsonObject color_values
     this->setMinimumSize(m_Size);
 
     connect(&m_DeletePopup,&DeletePopup::LeftButtonClicked,this,[=](){
-        QSettings settings("Mezory", "ColorPicker");
-        settings.beginGroup("ConfigFiles");
-        auto config_path = settings.value("color_pallete_config").toString();
-        settings.endGroup();
-
-        auto json_doc = Utils::Json::LoadJson(config_path);
-        auto root_obj = json_doc.object();
-        root_obj.remove(m_PalleteName);
-        json_doc.setObject(root_obj);
-
-        Utils::Json::SaveJson(json_doc,config_path);
-
-        emit JsonConfigUpdate(this);
+        emit DeleteClicked(this);
     });
+
+    m_Radius = m_Size.width() / 2;
 }
 
 void NamedPallete::Serialize(QJsonDocument doc, const QString &file_path){
@@ -50,6 +40,7 @@ void NamedPallete::Serialize(const NamedPallete *pallete, QJsonDocument &doc, co
     }
 
     doc.setObject(root_obj);
+
     Utils::Json::SaveJson(doc,file_path);
 }
 
@@ -70,6 +61,7 @@ void NamedPallete::mousePressEvent(QMouseEvent *event){
     }else if(event->button() == Qt::MouseButton::RightButton){
         m_DeletePopup.OnRightClick();
     }
+
     QLabel::mousePressEvent(event);
 }
 
@@ -77,9 +69,11 @@ void NamedPallete::paintEvent(QPaintEvent *){
     QPainter painter(this);
     painter.setRenderHint(QPainter::Antialiasing, true);
 
-    QRadialGradient gradient(this->rect().center(),16);
-    double fill_dx =  ((double)m_ColorValues.size() / (double)m_Size.height());
+    QRadialGradient gradient(this->rect().center(), m_Radius);
+    const double fill_dx =  ((double)m_ColorValues.size() / (double)m_Size.height());
+
     int iter = 0;
+
     for(auto color_value : m_ColorValues){
         QColor color(color_value.toString());
         double pos_at = (double)(iter * fill_dx);
@@ -87,7 +81,8 @@ void NamedPallete::paintEvent(QPaintEvent *){
             gradient.setColorAt(pos_at,color);
         ++iter;
     }
+
     painter.setBrush(gradient);
 
-    painter.drawEllipse(this->rect().center(), 16, 16 );
+    painter.drawEllipse(this->rect().center(), m_Radius, m_Radius );
 }

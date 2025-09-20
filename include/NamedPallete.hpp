@@ -8,6 +8,7 @@ class NamedPallete : public QLabel{
     Q_OBJECT
 private:
     QSize m_Size;
+    int m_Radius{16};
     QString m_PalleteName;
     QJsonObject m_ColorValues;
     DeletePopup m_DeletePopup;
@@ -24,7 +25,7 @@ public:
 
     const QString& GetPalleteName() const;
 signals:
-    void JsonConfigUpdate(NamedPallete* const pallete_to_remove);
+    void DeleteClicked(NamedPallete* const pallete_to_remove);
     void Clicked();
 protected:
     void mousePressEvent(QMouseEvent* event) Q_DECL_OVERRIDE;

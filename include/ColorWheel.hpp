@@ -70,7 +70,9 @@ private:
     quint16 m_Margin{10};
     std::shared_ptr<QColor> m_SelectedColor{nullptr};
 
-    std::unordered_map<size_t,std::shared_ptr<internal::IColorWheel>> m_ColorWheels;
+    std::unordered_map<hash_code_t,std::shared_ptr<internal::IColorWheel>> m_ColorWheels;
+    std::unordered_map<size_t,hash_code_t> m_WheelsInfo;
+
     std::shared_ptr<internal::IColorWheel> m_CurrentColorWheel{nullptr};
 private:
     ShadeCircle m_ShadeCircle;
@@ -85,6 +87,8 @@ public:
 private:
     template <typename _ColorWheelType>
     void AddColorWheel(std::shared_ptr<_ColorWheelType> color_wheel);
+
+    void SetContext(size_t id);
 
     template <typename _ColorWheelType>
     inline void SetContext();
@@ -121,7 +125,6 @@ inline void ColorWheel::SetContext()
     }
 
     const hash_code_t hash = typeid(_ColorWheelType).hash_code();
-
     m_CurrentColorWheel = m_ColorWheels[hash];
 }
 
@@ -135,6 +138,7 @@ inline void ColorWheel::AddColorWheel(std::shared_ptr<_ColorWheelType> color_whe
     const hash_code_t hash = typeid(_ColorWheelType).hash_code();
 
     m_ColorWheels.insert(std::make_pair(hash, color_wheel));
+    m_WheelsInfo.insert(std::make_pair(m_ColorWheels.size() - 1, hash));
 }
 
 #endif // COLORWHEEL_H

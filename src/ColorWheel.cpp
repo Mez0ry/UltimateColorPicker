@@ -17,11 +17,14 @@
 #include <QPushButton>
 #include <QScreen>
 
+#include "mainwindow.h"
 #include "ColorConversion.hpp"
 #include "Utils.hpp"
 
 ColorWheel::ColorWheel(QWidget *parent, QColor selected_color, quint16 margin) : QWidget(parent), m_ShadeCircle(this), m_ColorInfo(m_ShadeCircle.GetSelectedShade(),this){
     this->setMouseTracking(false);
+    auto main_window = static_cast<MainWindow*>(Utils::GetMainWindow());
+    auto ui = main_window->GetUi();
 
     m_SelectedColor = std::make_shared<QColor>(selected_color);
     this->m_ShadeCircle.SetShadeColor(std::make_shared<QColor>(*m_SelectedColor));
@@ -35,7 +38,12 @@ ColorWheel::ColorWheel(QWidget *parent, QColor selected_color, quint16 margin) :
 
     this->AddColorWheel(std::make_shared<internal::OklabColorWheel>(this->rect()));
     this->AddColorWheel(std::make_shared<internal::HsvColorWheel>(this->rect()));
-    this->SetContext<internal::OklabColorWheel>();
+
+    this->SetContext(0);
+
+    connect(ui->color_wheel_types,&QStackedWidget::currentChanged,this,[=](int index){
+        SetContext(index);
+    });
 
     connect(&m_ColorInfo,&ColorInfo::InfoChanged,this,[=](){
         this->m_ColorInfo.SetupColorInfo();
@@ -62,6 +70,14 @@ ColorWheel::ColorWheel(QWidget *parent, QColor selected_color, quint16 margin) :
     });
 
     OnColorChange();
+}
+
+void ColorWheel::SetContext(size_t id) {
+    if(!m_WheelsInfo.count(id)){
+        return;
+    }
+
+    m_CurrentColorWheel = m_ColorWheels[m_WheelsInfo[id]];
 }
 
 void ColorWheel::OnPaintEvent(QPainter& painter)

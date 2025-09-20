@@ -18,15 +18,22 @@ class ColorPallete : public QWidget{
 private:
     QSize m_Size;
     QFrame* m_BackgroundVBoxLayout{nullptr};
+    QFrame* m_Content{nullptr};
+
     QScrollArea* m_ScrollArea{nullptr};
     AddIcon* m_AddIcon{nullptr};
-
-    QFrame* m_Content{nullptr};
 public:
     explicit ColorPallete(QWidget* parent = Q_NULLPTR);
     ~ColorPallete() Q_DECL_EQ_DEFAULT;
 
     void OnButtonClicked();
+private:
+    void SetupBackgroundVBoxLayout();
+    void SetupContent();
+    void SetupScrollArea();
+    void SetupAddIcon();
+private:
+    void OnNamedPalleteClicked(NamedPallete* const pallete_ptr);
 protected:
     void moveEvent(QMoveEvent *event) Q_DECL_OVERRIDE;
     void resizeEvent(QResizeEvent *event) Q_DECL_OVERRIDE;

@@ -5,6 +5,8 @@
 #include <vector>
 #include <QJsonDocument>
 
+class QFile;
+
 namespace Utils{
 
     [[nodiscard]] QMainWindow* GetMainWindow();
@@ -32,8 +34,9 @@ namespace Utils{
     }//!font
 
     namespace Json{
-        QJsonDocument LoadJson(QString file_path);
+        QJsonDocument LoadJson(QFile& file);
         void SaveJson(QJsonDocument doc, QString file_path);
+        void RemoveKeyFromJsonFileAndSave(const QString& json_file_path, const QString &key);
 
     } //!Json
 

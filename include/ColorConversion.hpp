@@ -69,9 +69,10 @@ QVector3D rgb_to_xyz(const QRgb &rgb, const float scale_factor = 100);
 QRgb xyz_to_rgb(QVector3D xyz, const float unscale_factor = 100);
 
 /*
-* @return scaled xyz
+* @return Scaled xyz
 */
 inline QVector3D oklab_to_xyz(double L, double a, double b);
+
 /*
  * @return QColor as rgb color
 */
