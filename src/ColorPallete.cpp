@@ -26,6 +26,7 @@ ColorPallete::ColorPallete(QWidget* parent)
     : QWidget(parent)
     , m_BackgroundVBoxLayout(new QFrame(this))
     , m_Content(new QFrame(this))
+    , m_PalleteSlidingWindow(0,25,25)
     , m_ScrollArea(new QScrollArea(this))
     , m_AddIcon(new AddIcon(this))
 {
@@ -43,7 +44,7 @@ ColorPallete::ColorPallete(QWidget* parent)
     QPoint center = desktop_rect.center();
     this->setGeometry(center.x() - width() * 0.5, center.y() - height() * 0.5,m_Size.width(),m_Size.height());
 
-    this->setMinimumSize(500,500);
+    this->setMinimumSize(500, 500);
 
     SetupBackgroundVBoxLayout();
     SetupContent();
@@ -54,35 +55,54 @@ ColorPallete::ColorPallete(QWidget* parent)
     settings.beginGroup("ConfigFiles");
     const auto color_pallete_cfg_path = settings.value("color_pallete_config").toString();
     settings.endGroup();
-
-    auto deserialize_and_add_named_palletes_to_layout = [=](const QJsonDocument& json_doc){
-        const auto root_obj = json_doc.object();
-
-        for(int index = 0; index < root_obj.size(); ++index){
-            const auto key = root_obj.keys()[index];
-            const auto color_values = root_obj[key].toObject();
-
-            auto* const pallete_ptr = new NamedPallete(key,color_values, this);
-            m_BackgroundVBoxLayout->layout()->addWidget(pallete_ptr);
-
-            connect(pallete_ptr,&NamedPallete::DeleteClicked,[=](NamedPallete* const pallete_to_remove){
-                Utils::Json::RemoveKeyFromJsonFileAndSave(color_pallete_cfg_path, pallete_to_remove->GetPalleteName());
-                m_BackgroundVBoxLayout->layout()->removeWidget(pallete_to_remove);
-                delete pallete_to_remove;
-
-                this->update();
-            });
-
-            auto on_click_cb = std::bind(&ColorPallete::OnNamedPalleteClicked, this, pallete_ptr);
-            connect(pallete_ptr,&NamedPallete::Clicked,on_click_cb);
-        }
-    };
-
     QFile file(color_pallete_cfg_path);
-    QJsonDocument doc;
-    doc = Utils::Json::LoadJson(file);
 
-    deserialize_and_add_named_palletes_to_layout(doc);
+    const auto file_size_mb = file.size() / qPow(1024, 2);
+
+    if(file_size_mb > 50){
+        m_JsonWatcher = new QFutureWatcher<QJsonDocument>();
+
+        QObject::connect(m_JsonWatcher, &QFutureWatcherBase::finished, this, [color_pallete_cfg_path, this]() {
+            m_JsonDocument = std::make_shared<QJsonDocument>(m_JsonWatcher->result());
+            if (m_JsonDocument && m_JsonDocument->isEmpty()) {
+                qInfo() << "Json file failed to load";
+            } else {
+                m_AllJsonKeys = m_JsonDocument->object().keys();
+                m_MaximumPages = m_PalleteSlidingWindow.elems_window_size / m_AllJsonKeys.size();
+
+                auto root_obj = m_JsonDocument->object();
+                for(int index = m_PalleteSlidingWindow.start_idx; index < m_PalleteSlidingWindow.end_idx && index < m_AllJsonKeys.size(); index++){
+                    auto key = m_AllJsonKeys[index];
+                    auto color_values = root_obj[m_AllJsonKeys[index]].toObject();
+                    AddNamedPalleteToLayout(key,color_values);
+                    this->update();
+                }
+                qInfo() << "File successfully loaded" << color_pallete_cfg_path;
+            }
+
+            m_JsonWatcher->deleteLater();
+        });
+
+        QFuture<QJsonDocument> json_future = QtConcurrent::run([](const QString& file_name) {
+            QFile file(file_name);
+            auto doc = Utils::Json::LoadJson(file);
+            return doc;
+        }, color_pallete_cfg_path);
+
+        m_JsonWatcher->setFuture(json_future);
+    }else{
+        m_JsonDocument = std::make_shared<QJsonDocument>(Utils::Json::LoadJson(file));
+        m_AllJsonKeys = m_JsonDocument->object().keys();
+        m_MaximumPages = m_PalleteSlidingWindow.elems_window_size / m_AllJsonKeys.size();
+
+        auto root_obj = m_JsonDocument->object();
+        for(int index = m_PalleteSlidingWindow.start_idx; index < m_PalleteSlidingWindow.end_idx && index < m_AllJsonKeys.size(); index++){
+            auto key = m_AllJsonKeys[index];
+            auto color_values = root_obj[m_AllJsonKeys[index]].toObject();
+            AddNamedPalleteToLayout(key, color_values);
+            this->update();
+        }
+    }
 
     SetupAddIcon();
 }
@@ -112,7 +132,7 @@ void ColorPallete::SetupBackgroundVBoxLayout() {
 
     m_BackgroundVBoxLayout->layout()->setAlignment(Qt::AlignTop | Qt::AlignCenter);
     m_BackgroundVBoxLayout->layout()->setSpacing(spacing);
-    m_BackgroundVBoxLayout->layout()->setContentsMargins(0,content_margin,0,0);
+    m_BackgroundVBoxLayout->layout()->setContentsMargins(0, content_margin, 0, 0);
 }
 
 void ColorPallete::SetupContent() {
@@ -136,16 +156,60 @@ void ColorPallete::SetupContent() {
 }
 
 void ColorPallete::SetupScrollArea() {
-    const QRect desktop_rect = screen()->availableGeometry();
-    const QRect rect{0,0,62,m_Size.height()};
+    const QRect rect{0, 0, 72, this->height()};
 
     m_ScrollArea->setStyleSheet("QScrollBar:vertical{ border: none; background: rgb(34,36,44); }");
     m_ScrollArea->setWidgetResizable(true);
     m_ScrollArea->setBackgroundRole(QPalette::Dark);
-    m_ScrollArea->setGeometry(QRect(rect.x(),rect.y(),rect.width(),desktop_rect.height()));
+    m_ScrollArea->setGeometry(rect);
 
     m_ScrollArea->setWidget(m_BackgroundVBoxLayout);
 
+    QObject::connect(m_ScrollArea->verticalScrollBar(), &QScrollBar::valueChanged, [=](int value){
+
+        const int threshold = 1;
+
+        bool is_top_reached   = (value <= threshold);
+        bool is_bottom_reached = (value >= m_ScrollArea->verticalScrollBar()->maximum() - threshold);
+
+        if(is_top_reached){
+            if(qMax(m_PalleteSlidingWindow.end_idx, m_PalleteSlidingWindow.elems_window_size) == m_PalleteSlidingWindow.elems_window_size){
+                return;
+            }
+
+            m_PalleteSlidingWindow.end_idx = qBound(m_PalleteSlidingWindow.elems_window_size, m_PalleteSlidingWindow.end_idx - m_PalleteSlidingWindow.elems_window_size, m_AllJsonKeys.size());
+            m_PalleteSlidingWindow.start_idx =  qBound(0, m_PalleteSlidingWindow.start_idx - m_PalleteSlidingWindow.elems_window_size, m_PalleteSlidingWindow.end_idx - m_PalleteSlidingWindow.elems_window_size);
+            m_CurrentPage -= 1;
+        }else if(is_bottom_reached){
+            if(qMin(m_PalleteSlidingWindow.end_idx, m_AllJsonKeys.size()) == m_AllJsonKeys.size()){
+                return;
+            }
+            m_PalleteSlidingWindow.end_idx = qBound(m_PalleteSlidingWindow.elems_window_size, m_PalleteSlidingWindow.end_idx + m_PalleteSlidingWindow.elems_window_size, m_AllJsonKeys.size());
+            m_PalleteSlidingWindow.start_idx =  qBound(0, m_PalleteSlidingWindow.start_idx + m_PalleteSlidingWindow.elems_window_size, m_PalleteSlidingWindow.end_idx - m_PalleteSlidingWindow.elems_window_size);
+            m_CurrentPage += 1;
+        }
+
+        if(!m_JsonDocument){
+            return;
+        }
+
+        if(is_top_reached || is_bottom_reached){
+            auto root_obj = m_JsonDocument->object();
+
+            for(int index = m_PalleteSlidingWindow.start_idx, layout_index = 0; index < m_PalleteSlidingWindow.end_idx && index < m_AllJsonKeys.size(); index++, layout_index++){
+                auto pallete_name = m_AllJsonKeys[index];
+                auto color_values = root_obj[m_AllJsonKeys[index]].toObject();
+                auto* const qvbox_layout = qobject_cast<QVBoxLayout*>(m_BackgroundVBoxLayout->layout());
+                auto wid = qvbox_layout->itemAt(layout_index)->widget();
+                if(wid){
+                    qobject_cast<NamedPallete*>(wid)->SetPalleteName(pallete_name);
+                    qobject_cast<NamedPallete*>(wid)->SetColors(color_values);
+                    this->update();
+                }
+            }
+        }
+
+    });
 }
 
 void ColorPallete::SetupAddIcon() {
@@ -155,10 +219,9 @@ void ColorPallete::SetupAddIcon() {
     const auto color_pallete_cfg_path = settings.value("color_pallete_config").toString();
     settings.endGroup();
 
-
     m_AddIcon->SetPlaceHolderText("Sun Bliss");
     auto* const qvbox_layout = qobject_cast<QVBoxLayout*>(m_BackgroundVBoxLayout->layout());
-    qvbox_layout->addWidget(m_AddIcon);
+    qvbox_layout->addWidget(m_AddIcon, 0, Qt::AlignHCenter | Qt::AlignTop);
     qvbox_layout->addStretch();
 
     QGraphicsBlurEffect* window_blur = new QGraphicsBlurEffect();
@@ -169,7 +232,6 @@ void ColorPallete::SetupAddIcon() {
 
     connect(m_AddIcon,&AddIcon::IsLeftClicked,this,[=](){
         window_blur->setEnabled(true);
-
     });
 
     connect(m_AddIcon,&AddIcon::WasNotNamed,this,[=](){
@@ -236,7 +298,7 @@ void ColorPallete::OnNamedPalleteClicked(NamedPallete* const pallete_ptr) {
         }
 
         auto* new_widget = new ColoredEllipse(QColor(new_text));
-        grid_layout->PushWidget(new_widget, 1,1, Qt::AlignCenter);
+        grid_layout->PushWidget(new_widget, 1, 1, Qt::AlignCenter);
         grid_layout->PushWidget(icon_widget, 1, 1, Qt::AlignCenter);
 
         auto new_colors = pallete_ptr->GetColors();
@@ -311,8 +373,35 @@ void ColorPallete::OnResize(QSize new_size)
         }
     }
 
+    m_ScrollArea->setGeometry({0,0,72,new_size.height()});
+
+    m_ScrollArea->update();
     m_BackgroundVBoxLayout->update();
     grid_layout->update();
     this->update();
 }
 
+void ColorPallete::AddNamedPalleteToLayout(const QString& key, const QJsonObject& color_values) {
+    QSettings settings("Mezory", "ColorPicker");
+
+    settings.beginGroup("ConfigFiles");
+    const auto color_pallete_cfg_path = settings.value("color_pallete_config").toString();
+    //const auto color_pallete_cfg_path = "C:\\QTProjects\\UltimateColorPicker\\resources\\large_colors.json";
+    settings.endGroup();
+
+    auto* const qvbox_layout = qobject_cast<QVBoxLayout*>(m_BackgroundVBoxLayout->layout());
+
+    auto* const pallete_ptr = new NamedPallete(key, color_values, this);
+    qvbox_layout->insertWidget(0, pallete_ptr);
+    qDebug() << "after m_BackgroundVBoxLayout->layout()->addWidget(pallete_ptr);";
+
+    connect(pallete_ptr,&NamedPallete::DeleteClicked,[=](NamedPallete* const pallete_to_remove){
+        Utils::Json::RemoveKeyFromJsonFileAndSave(color_pallete_cfg_path, pallete_to_remove->GetPalleteName());
+        m_BackgroundVBoxLayout->layout()->removeWidget(pallete_to_remove);
+        delete pallete_to_remove;
+    });
+
+    auto on_click_cb = std::bind(&ColorPallete::OnNamedPalleteClicked, this, pallete_ptr);
+    connect(pallete_ptr, &NamedPallete::Clicked, on_click_cb);
+    qDebug() << "leave";
+}

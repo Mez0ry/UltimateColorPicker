@@ -24,6 +24,7 @@ public:
     void SetColors(QJsonObject colors);
 
     const QString& GetPalleteName() const;
+    void SetPalleteName(const QString& pallete_name);
 signals:
     void DeleteClicked(NamedPallete* const pallete_to_remove);
     void Clicked();

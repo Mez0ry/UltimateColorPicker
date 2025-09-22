@@ -6,8 +6,8 @@
 
 #include "Utils.hpp"
 
-NamedPallete::NamedPallete(const QString &pallete_name, QJsonObject color_values, QWidget *parent) : QLabel(parent), m_Size(32,32), m_PalleteName(pallete_name), m_ColorValues(color_values), m_DeletePopup(this){
-    this->setToolTip(m_PalleteName);
+NamedPallete::NamedPallete(const QString &pallete_name, QJsonObject color_values, QWidget *parent) : QLabel(parent), m_Size(32,32),  m_ColorValues(color_values), m_DeletePopup(this){
+    SetPalleteName(pallete_name);
     this->setGeometry(0, 0, m_Size.width(), m_Size.height());
 
     this->setSizePolicy(QSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred));
@@ -54,6 +54,11 @@ void NamedPallete::Serialize(const NamedPallete *pallete, QJsonDocument &doc, co
  }
 
 const QString &NamedPallete::GetPalleteName() const {return m_PalleteName;}
+
+void NamedPallete::SetPalleteName(const QString &pallete_name) {
+    this->m_PalleteName = pallete_name;
+    this->setToolTip(m_PalleteName);
+}
 
 void NamedPallete::mousePressEvent(QMouseEvent *event){
     if(event->button() == Qt::MouseButton::LeftButton){

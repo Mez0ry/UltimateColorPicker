@@ -8,6 +8,7 @@ AddIcon::AddIcon(QWidget *parent, QSize size) : QLabel(parent), m_Size(size) , m
     this->setPixmap(add_icon_pixmap);
     this->setGeometry(0,0,m_Size.width(),m_Size.height());
     this->setToolTip("Add color");
+    this->setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));
 
     connect(&m_PalleteNamePopup,&QLineEdit::returnPressed,this,[=](){
         emit IsNamed(m_PalleteNamePopup.text());
