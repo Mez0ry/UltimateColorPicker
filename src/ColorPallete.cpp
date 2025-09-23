@@ -166,7 +166,6 @@ void ColorPallete::SetupScrollArea() {
     m_ScrollArea->setWidget(m_BackgroundVBoxLayout);
 
     QObject::connect(m_ScrollArea->verticalScrollBar(), &QScrollBar::valueChanged, [=](int value){
-
         const int threshold = 1;
 
         bool is_top_reached   = (value <= threshold);
@@ -208,7 +207,6 @@ void ColorPallete::SetupScrollArea() {
                 }
             }
         }
-
     });
 }
 
@@ -348,8 +346,6 @@ void ColorPallete::closeEvent(QCloseEvent *event)
 
 void ColorPallete::OnResize(QSize new_size)
 {
-    Q_UNUSED(new_size);
-
     auto* const grid_layout = qobject_cast<GridLayout*>(m_Content->layout());
     auto grid_size = grid_layout->GetGridSize();
     quint32 content_width = m_Content->width();
@@ -375,7 +371,6 @@ void ColorPallete::OnResize(QSize new_size)
 
     m_ScrollArea->setGeometry({0,0,72,new_size.height()});
 
-    m_ScrollArea->update();
     m_BackgroundVBoxLayout->update();
     grid_layout->update();
     this->update();
@@ -386,14 +381,12 @@ void ColorPallete::AddNamedPalleteToLayout(const QString& key, const QJsonObject
 
     settings.beginGroup("ConfigFiles");
     const auto color_pallete_cfg_path = settings.value("color_pallete_config").toString();
-    //const auto color_pallete_cfg_path = "C:\\QTProjects\\UltimateColorPicker\\resources\\large_colors.json";
     settings.endGroup();
 
     auto* const qvbox_layout = qobject_cast<QVBoxLayout*>(m_BackgroundVBoxLayout->layout());
 
     auto* const pallete_ptr = new NamedPallete(key, color_values, this);
     qvbox_layout->insertWidget(0, pallete_ptr);
-    qDebug() << "after m_BackgroundVBoxLayout->layout()->addWidget(pallete_ptr);";
 
     connect(pallete_ptr,&NamedPallete::DeleteClicked,[=](NamedPallete* const pallete_to_remove){
         Utils::Json::RemoveKeyFromJsonFileAndSave(color_pallete_cfg_path, pallete_to_remove->GetPalleteName());
@@ -403,5 +396,4 @@ void ColorPallete::AddNamedPalleteToLayout(const QString& key, const QJsonObject
 
     auto on_click_cb = std::bind(&ColorPallete::OnNamedPalleteClicked, this, pallete_ptr);
     connect(pallete_ptr, &NamedPallete::Clicked, on_click_cb);
-    qDebug() << "leave";
 }
