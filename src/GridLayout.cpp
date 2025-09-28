@@ -8,19 +8,19 @@ GridLayout::GridLayout(int rows, int cols, QWidget *parent) : QGridLayout(parent
 
 void GridLayout::PushWidget(QWidget *w, Qt::Alignment alignment){
     auto p = GetNextInsertionPos();
-    this->addWidget(w, p.y(),p.x(),alignment);
+    this->addWidget(w, p.y(), p.x(), alignment);
 }
 
 void GridLayout::PushWidget(QWidget *w, int row_span, int column_span, Qt::Alignment alignment){
 
     auto p = GetNextInsertionPos();
-    this->addWidget(w, p.y(),p.x(),row_span,column_span,alignment);
+    this->addWidget(w, p.y(), p.x(), row_span, column_span, alignment);
 }
 
 void GridLayout::PushItem(QLayoutItem *item, int row_span, int column_span, Qt::Alignment alignment){
     auto p = GetNextInsertionPos();
 
-    this->addItem(item,p.y(),p.x(),row_span,column_span,alignment);
+    this->addItem(item, p.y(), p.x(), row_span, column_span, alignment);
 }
 
 QSize GridLayout::GetGridSize() const

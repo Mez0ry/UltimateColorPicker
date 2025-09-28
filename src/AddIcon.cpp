@@ -6,17 +6,17 @@
 AddIcon::AddIcon(QWidget *parent, QSize size) : QLabel(parent), m_Size(size) , m_PalleteNamePopup(parent){
     QPixmap add_icon_pixmap(":/resources/add_icon.png");
     this->setPixmap(add_icon_pixmap);
-    this->setGeometry(0,0,m_Size.width(),m_Size.height());
+    this->setGeometry(0, 0, m_Size.width(), m_Size.height());
     this->setToolTip("Add color");
     this->setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));
 
-    connect(&m_PalleteNamePopup,&QLineEdit::returnPressed,this,[=](){
+    connect(&m_PalleteNamePopup, &QLineEdit::returnPressed, this, [=](){
         emit IsNamed(m_PalleteNamePopup.text());
         m_PalleteNamePopup.clear();
         m_PalleteNamePopup.close();
     });
 
-    connect(&m_PalleteNamePopup,&PalleteNameSpecifierPopup::PressedOutside,this,[=](){
+    connect(&m_PalleteNamePopup, &PalleteNameSpecifierPopup::PressedOutside, this, [=](){
         emit WasNotNamed();
         m_PalleteNamePopup.clear();
         m_PalleteNamePopup.close();
@@ -24,12 +24,7 @@ AddIcon::AddIcon(QWidget *parent, QSize size) : QLabel(parent), m_Size(size) , m
 }
 
 void AddIcon::OnParentGeometryUpdate(QRect rect){
-    m_PalleteNamePopup.setGeometry(rect.center().x() - (m_PalleteNamePopup.width() / 2 ),rect.center().y() - (m_PalleteNamePopup.height() / 2 ), m_PalleteNamePopup.width(), m_PalleteNamePopup.height() );
-}
-
-void AddIcon::OnParentSizeUpdate(QSize size){
-    qint16 new_width{static_cast<qint16>(size.width() * 0.5f)},new_height{static_cast<qint16>(size.height() * 0.15f)};
-    m_PalleteNamePopup.setGeometry(m_PalleteNamePopup.x(),m_PalleteNamePopup.y(), new_width, new_height);
+    m_PalleteNamePopup.setGeometry(rect.center().x() - (m_PalleteNamePopup.width() / 2 ), rect.center().y() - (m_PalleteNamePopup.height() / 2 ), m_PalleteNamePopup.width(), m_PalleteNamePopup.height() );
 }
 
 void AddIcon::SetPlaceHolderText(QString placeholder)
@@ -72,7 +67,6 @@ PalleteNameSpecifierPopup::PalleteNameSpecifierPopup(QWidget *parent) : QLineEdi
         this->update();
         updateGeometry();
     });
-
 }
 
 void PalleteNameSpecifierPopup::mousePressEvent(QMouseEvent *event){

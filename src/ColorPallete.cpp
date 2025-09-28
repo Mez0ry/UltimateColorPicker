@@ -26,7 +26,7 @@ ColorPallete::ColorPallete(QWidget* parent)
     : QWidget(parent)
     , m_BackgroundVBoxLayout(new QFrame(this))
     , m_Content(new QFrame(this))
-    , m_PalleteSlidingWindow(0,25,25)
+    , m_PalleteSlidingWindow(0, 25, 25)
     , m_ScrollArea(new QScrollArea(this))
     , m_AddIcon(new AddIcon(this))
 {
@@ -42,7 +42,7 @@ ColorPallete::ColorPallete(QWidget* parent)
     m_Size.setHeight(desktop_rect.height() * height_percentage);
 
     QPoint center = desktop_rect.center();
-    this->setGeometry(center.x() - width() * 0.5, center.y() - height() * 0.5,m_Size.width(),m_Size.height());
+    this->setGeometry(center.x() - width() * 0.5, center.y() - height() * 0.5, m_Size.width(), m_Size.height());
 
     this->setMinimumSize(500, 500);
 
@@ -62,22 +62,21 @@ ColorPallete::ColorPallete(QWidget* parent)
     if(file_size_mb > 50){
         m_JsonWatcher = new QFutureWatcher<QJsonDocument>();
 
-        QObject::connect(m_JsonWatcher, &QFutureWatcherBase::finished, this, [color_pallete_cfg_path, this]() {
+        QObject::connect(m_JsonWatcher, &QFutureWatcherBase::finished, this, [this]() {
             m_JsonDocument = std::make_shared<QJsonDocument>(m_JsonWatcher->result());
-            if (m_JsonDocument && m_JsonDocument->isEmpty()) {
-                qInfo() << "Json file failed to load";
+            if (!m_JsonDocument || m_JsonDocument->isEmpty()) {
+                qCritical() << "Json document failed to load";
             } else {
                 m_AllJsonKeys = m_JsonDocument->object().keys();
-                m_MaximumPages = m_PalleteSlidingWindow.elems_window_size / m_AllJsonKeys.size();
+                m_MaximumPages = m_PalleteSlidingWindow.GetWindowSize() / m_AllJsonKeys.size();
 
                 auto root_obj = m_JsonDocument->object();
-                for(int index = m_PalleteSlidingWindow.start_idx; index < m_PalleteSlidingWindow.end_idx && index < m_AllJsonKeys.size(); index++){
+                for(int index = m_PalleteSlidingWindow.GetStartIndex(); index < m_PalleteSlidingWindow.GetEndIndex() && index < m_AllJsonKeys.size(); index++){
                     auto key = m_AllJsonKeys[index];
-                    auto color_values = root_obj[m_AllJsonKeys[index]].toObject();
-                    AddNamedPalleteToLayout(key,color_values);
+                    auto color_values = root_obj[key].toObject();
+                    AddNamedPalleteToLayout(key, color_values);
                     this->update();
                 }
-                qInfo() << "File successfully loaded" << color_pallete_cfg_path;
             }
 
             m_JsonWatcher->deleteLater();
@@ -93,12 +92,17 @@ ColorPallete::ColorPallete(QWidget* parent)
     }else{
         m_JsonDocument = std::make_shared<QJsonDocument>(Utils::Json::LoadJson(file));
         m_AllJsonKeys = m_JsonDocument->object().keys();
-        m_MaximumPages = m_PalleteSlidingWindow.elems_window_size / m_AllJsonKeys.size();
+        m_MaximumPages = m_PalleteSlidingWindow.GetWindowSize() / m_AllJsonKeys.size();
 
         auto root_obj = m_JsonDocument->object();
-        for(int index = m_PalleteSlidingWindow.start_idx; index < m_PalleteSlidingWindow.end_idx && index < m_AllJsonKeys.size(); index++){
+
+        for(auto& index : m_PalleteSlidingWindow){
+            if(index >= m_AllJsonKeys.size()){
+                break;
+            }
+
             auto key = m_AllJsonKeys[index];
-            auto color_values = root_obj[m_AllJsonKeys[index]].toObject();
+            auto color_values = root_obj[key].toObject();
             AddNamedPalleteToLayout(key, color_values);
             this->update();
         }
@@ -115,7 +119,7 @@ void ColorPallete::OnButtonClicked()
 void ColorPallete::SetupBackgroundVBoxLayout() {
     const QRect desktop_rect = screen()->availableGeometry();
 
-    const QRect rect{0,0,62,m_Size.height()};
+    const QRect rect{0, 0, 62, m_Size.height()};
     constexpr quint8 spacing = 12;
     constexpr quint8 content_margin = spacing;
 
@@ -136,18 +140,18 @@ void ColorPallete::SetupBackgroundVBoxLayout() {
 }
 
 void ColorPallete::SetupContent() {
-    const QRect rect{0,0,62,m_Size.height()};
-    m_Content->setGeometry(rect.x() + rect.width(),rect.y(),this->width(), this->height() / 2);
+    const QRect rect{0, 0, 62, m_Size.height()};
+    m_Content->setGeometry(rect.x() + rect.width(), rect.y(), this->width(), this->height() / 2);
 
     m_Content->setStyleSheet(QString("background-color: #1B1D23;"));
     m_Content->setGeometry(rect.x() + rect.width(), rect.y(), this->width() - rect.width(), this->height());
 
-    const QPoint grid_size(10,100);
+    const QPoint grid_size(10, 100);
 
     auto* const grid_layout = new GridLayout(grid_size.y(), grid_size.x(), m_Content);
 
-    grid_layout->setContentsMargins(11,15,0,0);
-    grid_layout->setGeometry(QRect(0,0,this->width() - rect.width(), this->height()));
+    grid_layout->setContentsMargins(11, 15, 0, 0);
+    grid_layout->setGeometry(QRect(0, 0, this->width() - rect.width(), this->height()));
     grid_layout->setOriginCorner(Qt::TopLeftCorner);
     grid_layout->setColumnMinimumWidth(0, 44);
     m_Content->setLayout(grid_layout);
@@ -172,19 +176,16 @@ void ColorPallete::SetupScrollArea() {
         bool is_bottom_reached = (value >= m_ScrollArea->verticalScrollBar()->maximum() - threshold);
 
         if(is_top_reached){
-            if(qMax(m_PalleteSlidingWindow.end_idx, m_PalleteSlidingWindow.elems_window_size) == m_PalleteSlidingWindow.elems_window_size){
+            if(!m_PalleteSlidingWindow.SlideBackwardByWindowSize(m_AllJsonKeys.size())){
                 return;
             }
 
-            m_PalleteSlidingWindow.end_idx = qBound(m_PalleteSlidingWindow.elems_window_size, m_PalleteSlidingWindow.end_idx - m_PalleteSlidingWindow.elems_window_size, m_AllJsonKeys.size());
-            m_PalleteSlidingWindow.start_idx =  qBound(0, m_PalleteSlidingWindow.start_idx - m_PalleteSlidingWindow.elems_window_size, m_PalleteSlidingWindow.end_idx - m_PalleteSlidingWindow.elems_window_size);
             m_CurrentPage -= 1;
         }else if(is_bottom_reached){
-            if(qMin(m_PalleteSlidingWindow.end_idx, m_AllJsonKeys.size()) == m_AllJsonKeys.size()){
+            if(!m_PalleteSlidingWindow.SlideForwardByWindowSize(m_AllJsonKeys.size())){
                 return;
             }
-            m_PalleteSlidingWindow.end_idx = qBound(m_PalleteSlidingWindow.elems_window_size, m_PalleteSlidingWindow.end_idx + m_PalleteSlidingWindow.elems_window_size, m_AllJsonKeys.size());
-            m_PalleteSlidingWindow.start_idx =  qBound(0, m_PalleteSlidingWindow.start_idx + m_PalleteSlidingWindow.elems_window_size, m_PalleteSlidingWindow.end_idx - m_PalleteSlidingWindow.elems_window_size);
+
             m_CurrentPage += 1;
         }
 
@@ -194,10 +195,14 @@ void ColorPallete::SetupScrollArea() {
 
         if(is_top_reached || is_bottom_reached){
             auto root_obj = m_JsonDocument->object();
+            int layout_index = {0};
+            for(auto& index : m_PalleteSlidingWindow){
+                if(index >= m_AllJsonKeys.size()){
+                    break;
+                }
 
-            for(int index = m_PalleteSlidingWindow.start_idx, layout_index = 0; index < m_PalleteSlidingWindow.end_idx && index < m_AllJsonKeys.size(); index++, layout_index++){
                 auto pallete_name = m_AllJsonKeys[index];
-                auto color_values = root_obj[m_AllJsonKeys[index]].toObject();
+                auto color_values = root_obj[pallete_name].toObject();
                 auto* const qvbox_layout = qobject_cast<QVBoxLayout*>(m_BackgroundVBoxLayout->layout());
                 auto wid = qvbox_layout->itemAt(layout_index)->widget();
                 if(wid){
@@ -205,6 +210,8 @@ void ColorPallete::SetupScrollArea() {
                     qobject_cast<NamedPallete*>(wid)->SetColors(color_values);
                     this->update();
                 }
+
+                ++layout_index;
             }
         }
     });
@@ -280,8 +287,7 @@ void ColorPallete::OnNamedPalleteClicked(NamedPallete* const pallete_ptr) {
 
     for(auto color : colors){
         next_ins_idx = grid_layout->GetNextInsertionPos();
-
-        grid_layout->PushWidget(new ColoredEllipse(QColor(color.toString())),1,1, Qt::AlignCenter);
+        grid_layout->PushWidget(new ColoredEllipse(QColor(color.toString())), 1, 1, Qt::AlignCenter);
     }
 
     auto* color_add_icon = new AddIcon(this);
@@ -319,7 +325,7 @@ void ColorPallete::OnNamedPalleteClicked(NamedPallete* const pallete_ptr) {
         pallete_ptr->Serialize(json_doc, color_pallete_cfg_path);
     });
 
-    grid_layout->PushWidget(color_add_icon,1,1, Qt::AlignCenter);
+    grid_layout->PushWidget(color_add_icon, 1, 1, Qt::AlignCenter);
 
     grid_layout->setRowStretch(next_ins_idx.y() + 2, 1);
     grid_layout->setColumnStretch(grid_size.width(), 1);
@@ -369,7 +375,7 @@ void ColorPallete::OnResize(QSize new_size)
         }
     }
 
-    m_ScrollArea->setGeometry({0,0,72,new_size.height()});
+    m_ScrollArea->setGeometry({0, 0, 72, new_size.height()});
 
     m_BackgroundVBoxLayout->update();
     grid_layout->update();

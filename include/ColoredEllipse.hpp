@@ -9,7 +9,7 @@ private:
     QSize m_Size;
     int m_Radius;
 public:
-    ColoredEllipse(QColor color = Qt::white,int radius = 22, QWidget* parent = Q_NULLPTR);
+    ColoredEllipse(QColor color = Qt::white, int radius = 22, QWidget* parent = Q_NULLPTR);
     ~ColoredEllipse() Q_DECL_EQ_DEFAULT;
 signals:
     void OnRightClick();

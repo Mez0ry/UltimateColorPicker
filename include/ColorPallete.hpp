@@ -1,7 +1,7 @@
 #ifndef COLORPALLETE_HPP
 #define COLORPALLETE_HPP
 #include <QWidget>
-#include <mutex>
+#include "SlidingWindow.hpp"
 
 template<typename TypeToWatch>
 class QFutureWatcher;
@@ -24,25 +24,17 @@ class ColorPallete : public QWidget{
     Q_OBJECT
 private:
     QSize m_Size;
-    QFrame* m_BackgroundVBoxLayout{nullptr};
-    QFrame* m_Content{nullptr};
-    std::mutex m_Mutex;
-
-    struct SlidingWindow{
-        SlidingWindow(int start, int end, int window_size) : start_idx(start), end_idx(end), elems_window_size(window_size){}
-        int start_idx,end_idx;
-        const int elems_window_size;
-    };
+    QFrame* m_BackgroundVBoxLayout{Q_NULLPTR};
+    QFrame* m_Content{Q_NULLPTR};
 
     SlidingWindow m_PalleteSlidingWindow;
     int m_CurrentPage{0};
     int m_MaximumPages{0};
-    QScrollArea* m_ScrollArea{nullptr};
-    AddIcon* m_AddIcon{nullptr};
+    QScrollArea* m_ScrollArea{Q_NULLPTR};
+    AddIcon* m_AddIcon{Q_NULLPTR};
     QFutureWatcher<QJsonDocument>* m_JsonWatcher;
     std::shared_ptr<QJsonDocument> m_JsonDocument;
     QStringList m_AllJsonKeys;
-
 public:
     explicit ColorPallete(QWidget* parent = Q_NULLPTR);
     ~ColorPallete() Q_DECL_EQ_DEFAULT;

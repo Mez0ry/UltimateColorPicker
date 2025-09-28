@@ -20,9 +20,9 @@ private:
     QColor  m_SelectedColor {Qt::white};
     //QPixmap m_MagnifierSrc;
     QPoint  m_CursorGlobal;
-    int     m_Radius {42};
-    int     m_Grid   {10};
-    int m_Hole {32};
+    int m_Radius{42};
+    int m_Grid{10};
+    int m_Hole{32};
 public:
     explicit ColorPicker(QWidget *parent = Q_NULLPTR);
     ~ColorPicker();
@@ -42,8 +42,8 @@ signals:
 public slots:
     void OnButtonPush();
 private:
-    void sampleUnderCursor();
-    QRect currentScreenLogicalGeometry() const;
+    void SampleUnderCursor();
+    QRect CurrentScreenLogicalGeometry() const;
 };
 
 #endif //!__COLOR_PICKER_HPP__

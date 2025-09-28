@@ -24,7 +24,7 @@ void ShadeCircle::SetShadeColor(std::shared_ptr<QColor> shade_color)
     }
 
     this->m_SelectedShadeColor = shade_color;
-    emit ShadeColorChanged();
+    emit ShadeChanged(m_SelectedShadeColor);
 }
 
 void ShadeCircle::paintEvent(QPaintEvent *event)
@@ -38,7 +38,7 @@ void ShadeCircle::paintEvent(QPaintEvent *event)
 
     painter.setViewport(0, 0 , this->width() , this->height());
 
-    auto shade_grad = QRadialGradient(this->rect().center(),m_Radius);
+    auto shade_grad = QRadialGradient(this->rect().center(), m_Radius);
 
     auto idx = 0;
 
@@ -55,18 +55,23 @@ void ShadeCircle::paintEvent(QPaintEvent *event)
         shade_grad.setColorAt(normalize_pos,m_RelativeColor.darker(darkness_value));
     }
 
+    auto parent_rect = this->parentWidget()->rect();
+    auto parent_center = parent_rect.center();
+
+    QPoint outer_pos = {rect().width() / 2 - parent_rect.width() / 2, rect().height() / 2 - parent_rect.height() / 2};
+    int inner_dia = m_Radius * 2;
+    const double offset = 1.5;
+    QPoint inner_center = QPoint(outer_pos.x() + (parent_rect.width() - inner_dia) / 2, outer_pos.y() + (parent_rect.height() - inner_dia) / 2 );
+
     QPainterPath shades_grad_path;
     shades_grad_path.setFillRule(Qt::WindingFill);
-    shades_grad_path.addEllipse(this->rect().center(), m_Radius , m_Radius);
 
+    shades_grad_path.addEllipse(inner_center.x() + offset, inner_center.y(), inner_dia, inner_dia);
     painter.setPen(Qt::SolidLine);
     painter.setClipPath(shades_grad_path);
     painter.fillPath(shades_grad_path, QBrush(shade_grad));
     painter.setClipping(true);
     painter.drawPath(shades_grad_path);
-
-    auto parent_rect = this->parentWidget()->rect();
-    auto parent_center = parent_rect.center();
 
     auto ring_rad = 8 * dpr,
          ring_dia = (ring_rad * 2) * dpr;
@@ -104,9 +109,8 @@ void ShadeCircle::mouseMoveEvent(QMouseEvent *event)
     if(m_IsChoosingColor){
         m_MousePosition = event_pos;
 
-        *m_SelectedShadeColor = Utils::GetColorFrom(event_pos,this);
-        emit ShadeColorChanged();
-        emit OnShadeChanged(m_SelectedShadeColor);
+        *m_SelectedShadeColor = Utils::GetColorFrom(event_pos, this);
+        emit ShadeChanged(m_SelectedShadeColor);
     }
 }
 
@@ -117,7 +121,7 @@ void ShadeCircle::mousePressEvent(QMouseEvent *event)
     m_MousePosition = event_pos;
 
     *m_SelectedShadeColor = Utils::GetColorFrom(event_pos,this);
-    emit ShadeColorChanged();
+    emit ShadeChanged(m_SelectedShadeColor);
 
     m_IsChoosingColor = true;
 }
@@ -127,7 +131,7 @@ void ShadeCircle::mouseReleaseEvent(QMouseEvent *event)
     auto event_pos = event->pos();
 
     *m_SelectedShadeColor = Utils::GetColorFrom(event_pos,this);
-    emit ShadeColorChanged();
+    emit ShadeChanged(m_SelectedShadeColor);
 
     m_IsChoosingColor = false;
 }

@@ -25,7 +25,6 @@ public:
     const QPoint GetNextInsertionPos() const;
 
     void Clear();
-
     bool IsEmpty() const;
 
     quint32 GetMaxWidth() const;

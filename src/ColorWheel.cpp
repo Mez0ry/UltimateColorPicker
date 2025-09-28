@@ -1,93 +1,64 @@
 #include "ColorWheel.hpp"
-#include <QColorSpace>
-#include <QPainter>
-#include <math.h>
-#include <qmath.h>
-#include <QMouseEvent>
-#include <QTransform>
-#include <QClipboard>
-#include <QMimeData>
 #include <QApplication>
+#include <QClipboard>
+#include <QColorSpace>
 #include <QLineEdit>
 #include <QMainWindow>
-#include <QStaticText>
-#include <QPixmap>
 #include <QMessageBox>
-#include <QRegularExpression>
+#include <QMimeData>
+#include <QMouseEvent>
+#include <QPainter>
+#include <QPixmap>
 #include <QPushButton>
+#include <QRegularExpression>
 #include <QScreen>
+#include <QStaticText>
+#include <QTransform>
+#include <math.h>
+#include <qmath.h>
 
-#include "mainwindow.h"
-#include "ColorConversion.hpp"
+#include "QColorExtended.hpp"
 #include "Utils.hpp"
+#include "ColorCombo.hpp"
+#include "ColorInfo.hpp"
 
-ColorWheel::ColorWheel(QWidget *parent, QColor selected_color, quint16 margin) : QWidget(parent), m_ShadeCircle(this), m_ColorInfo(m_ShadeCircle.GetSelectedShade(),this){
+ColorWheel::ColorWheel(QWidget *parent, QColor selected_color, quint16 margin) : QWidget(parent), m_ShadeCircle(this){
     this->setMouseTracking(false);
-    auto main_window = static_cast<MainWindow*>(Utils::GetMainWindow());
-    auto ui = main_window->GetUi();
-
     m_SelectedColor = std::make_shared<QColor>(selected_color);
+
     this->m_ShadeCircle.SetShadeColor(std::make_shared<QColor>(*m_SelectedColor));
+
     this->m_Margin = margin;
-
-    auto size_policy = QSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
-    size_policy.setHeightForWidth(true);
-    this->setSizePolicy(size_policy);
-
     this->setGeometry(0, 0, m_Size.width(),m_Size.height());
 
-    this->AddColorWheel(std::make_shared<internal::OklabColorWheel>(this->rect()));
-    this->AddColorWheel(std::make_shared<internal::HsvColorWheel>(this->rect()));
-
-    this->SetContext(0);
-
-    connect(ui->color_wheel_types,&QStackedWidget::currentChanged,this,[=](int index){
-        SetContext(index);
+    std::call_once(m_InitOnceFlag,[&](){
+        ColorInfo::GetInstance()->SetColorContext(m_ShadeCircle.GetSelectedShade());
+        ColorInfo::GetInstance()->setParent(this);
+        ColorInfo::GetInstance()->Setup();
     });
 
-    connect(&m_ColorInfo,&ColorInfo::InfoChanged,this,[=](){
-        this->m_ColorInfo.SetupColorInfo();
+    connect(ColorInfo::GetInstance(),&ColorInfo::InfoChanged, this, [=](){
+        ColorInfo::GetInstance()->SetupColorInfo();
         this->update();
     });
 
-    connect(&m_ShadeCircle,&ShadeCircle::ShadeColorChanged,this,[=](){
-        this->update();
-    });
+    connect(&m_ShadeCircle, &ShadeCircle::ShadeChanged, this, [=]( std::shared_ptr<QColor> new_color){
+        ColorInfo::GetInstance()->SetColorContext(new_color);
+        ColorInfo::GetInstance()->SetupColorInfo();
 
-    connect(&m_ShadeCircle,&ShadeCircle::OnShadeChanged,this,[=]( std::shared_ptr<QColor> new_color){
-        m_ColorInfo.SetColorContext(new_color);
-        m_ColorInfo.SetupColorInfo();
-
-        m_ColorCombo.SetBaseColor(new_color.get());
+        ColorCombo::GetInstance()->SetBaseColor(new_color.get());
         m_ShadeCircle.update();
+        this->update();
     });
 
-    connect(this, &ColorWheel::SigColorChanged, this,[=](){
-        m_ColorInfo.SetColorContext(m_SelectedColor);
-        m_ColorInfo.SetupColorInfo();
-        m_ColorCombo.SetBaseColor(m_SelectedColor.get());
+    connect(this, &ColorWheel::ColorChanged, this, [=](){
+        ColorInfo::GetInstance()->SetColorContext(m_SelectedColor);
+        ColorInfo::GetInstance()->SetupColorInfo();
+        ColorCombo::GetInstance()->SetBaseColor(m_SelectedColor.get());
         this->update();
     });
 
     OnColorChange();
-}
-
-void ColorWheel::SetContext(size_t id) {
-    if(!m_WheelsInfo.count(id)){
-        return;
-    }
-
-    m_CurrentColorWheel = m_ColorWheels[m_WheelsInfo[id]];
-}
-
-void ColorWheel::OnPaintEvent(QPainter& painter)
-{
-    m_CurrentColorWheel->OnPaintEvent(painter);
-}
-
-QColor ColorWheel::GetColorAtPoint(QPoint point, float radius)
-{
-    return m_CurrentColorWheel->GetColorAtPoint(point, radius);
 }
 
 void ColorWheel::paintEvent(QPaintEvent * event){
@@ -96,6 +67,13 @@ void ColorWheel::paintEvent(QPaintEvent * event){
 
     painter.setRenderHints(QPainter::Antialiasing);
     painter.setViewport(m_Margin, m_Margin, this->width() - 2 * m_Margin , this->height() - 2 * m_Margin);
+
+    QTransform transform;
+    transform.translate(width() / 2.0, height() / 2.0);
+    transform.scale(m_ScaleFactor, m_ScaleFactor);
+    transform.translate(-width() / 2.0, -height() / 2.0);
+
+    painter.setTransform(transform);
 
     OnPaintEvent(painter);
 
@@ -110,7 +88,7 @@ void ColorWheel::paintEvent(QPaintEvent * event){
     painter.setBrush(*m_SelectedColor.get());
 
     const double angle = (qAtan2(m_LastCursorPos.x() - (m_Radius), m_LastCursorPos.y() - (m_Radius)) + M_PI * 1.5);
-    const QPoint final_ellipse_pos(center.x() + m_Radius * std::cos(-angle ) , center.y() + m_Radius * std::sin(-angle ));
+    const QPoint final_ellipse_pos(center.x() + m_Radius * std::cos(-angle ), center.y() + m_Radius * std::sin(-angle ));
 
     const int radius = 7;
     const auto inversed_color = Utils::GetInveseredColorIf(*m_SelectedColor,[&](int luminance){ return (luminance < 30 );});
@@ -126,7 +104,7 @@ void ColorWheel::paintEvent(QPaintEvent * event){
 
 void ColorWheel::resizeEvent(QResizeEvent* event){
     Q_UNUSED(event);
-    this->setGeometry(0, 0, m_Size.width(),m_Size.height());
+    this->setGeometry(0, 0, m_Size.width(), m_Size.height());
 }
 
 void ColorWheel::mouseMoveEvent(QMouseEvent* event){
@@ -147,36 +125,36 @@ void ColorWheel::OnColorChange()
 {
     m_ShadeCircle.SetRelativeColor(*m_SelectedColor.get());
     this->repaint();
-    emit SigColorChanged();
+    emit ColorChanged();
 }
 
-internal::OklabColorWheel::OklabColorWheel(QRect parent_rect)
-    : m_ParentRect(parent_rect)
-{}
+OklabColorWheel::OklabColorWheel(QWidget *parent)
+    : ColorWheel(parent)
+{
+    m_ParentRect = parent->rect();
+}
 
-internal::OklabColorWheel::~OklabColorWheel() {}
-
-double internal::OklabColorWheel::GetChroma() const
+double OklabColorWheel::GetChroma() const
 {
     return m_CurrentChroma;
 }
 
-void internal::OklabColorWheel::SetChroma(double chroma)
+void OklabColorWheel::SetChroma(double chroma)
 {
     this->m_CurrentChroma = chroma;
 }
 
-double internal::OklabColorWheel::GetLightness() const
+double OklabColorWheel::GetLightness() const
 {
     return m_CurrentLightness;
 }
 
-void internal::OklabColorWheel::SetLightness(double lightness)
+void OklabColorWheel::SetLightness(double lightness)
 {
     this->m_CurrentLightness = lightness;
 }
 
-void internal::OklabColorWheel::OnPaintEvent(QPainter& painter)
+void OklabColorWheel::OnPaintEvent(QPainter& painter)
 {
     const auto parent_center = m_ParentRect.center();
 
@@ -189,9 +167,7 @@ void internal::OklabColorWheel::OnPaintEvent(QPainter& painter)
 
         const double a = m_CurrentChroma * std::cos(2 * M_PI * normalized_angle);
         const double b = m_CurrentChroma * std::sin(2 * M_PI * normalized_angle);
-        auto color = Utils::ColorConversion::oklab_to_rgb(m_CurrentLightness, a, b);
-
-        gradient.setColorAt(normalized_angle, color);
+        gradient.setColorAt(normalized_angle, Oklab(m_CurrentLightness,a,b));
     }
 
     QPen pen(QBrush(gradient), 20);
@@ -202,7 +178,7 @@ void internal::OklabColorWheel::OnPaintEvent(QPainter& painter)
     painter.drawEllipse(m_ParentRect);
 }
 
-QColor internal::OklabColorWheel::GetColorAtPoint(QPoint point, float radius) const
+QColor OklabColorWheel::GetColorAtPoint(QPoint point, float radius) const
 {
     double angle = (qAtan2(point.x() - radius, point.y() - radius) + M_PI);
     angle = angle + M_PI_2;
@@ -212,36 +188,35 @@ QColor internal::OklabColorWheel::GetColorAtPoint(QPoint point, float radius) co
     const double a_component = m_CurrentChroma * std::cos(normalized_angle * 2 * M_PI);
     const double b_component = m_CurrentChroma * std::sin(normalized_angle * 2 * M_PI);
 
-    return Utils::ColorConversion::oklab_to_rgb(m_CurrentLightness, a_component, b_component);
+    return Oklab(m_CurrentLightness, a_component, b_component);
 }
 
-internal::HsvColorWheel::HsvColorWheel(QRect parent_rect)
-    : m_ParentRect(parent_rect)
-{}
+HsvColorWheel::HsvColorWheel(QWidget *parent) : ColorWheel(parent)
+{
+    m_ParentRect = parent->rect();
+}
 
-internal::HsvColorWheel::~HsvColorWheel() {}
-
-double internal::HsvColorWheel::GetSaturation() const
+double HsvColorWheel::GetSaturation() const
 {
     return m_Saturation;
 }
 
-void internal::HsvColorWheel::SetSaturation(double saturation)
+void HsvColorWheel::SetSaturation(double saturation)
 {
     this->m_Saturation = saturation;
 }
 
-double internal::HsvColorWheel::GetBrightness() const
+double HsvColorWheel::GetBrightness() const
 {
     return m_Brightness;
 }
 
-void internal::HsvColorWheel::SetBrightness(double brightness)
+void HsvColorWheel::SetBrightness(double brightness)
 {
     this->m_Brightness = brightness;
 }
 
-void internal::HsvColorWheel::OnPaintEvent(QPainter& painter)
+void HsvColorWheel::OnPaintEvent(QPainter& painter)
 {
     const auto parent_center = m_ParentRect.center();
 
@@ -264,7 +239,7 @@ void internal::HsvColorWheel::OnPaintEvent(QPainter& painter)
     painter.drawEllipse(m_ParentRect);
 }
 
-QColor internal::HsvColorWheel::GetColorAtPoint(QPoint point, float radius) const
+QColor HsvColorWheel::GetColorAtPoint(QPoint point, float radius) const
 {
     const auto hue = (qAtan2(point.x() - radius, point.y() - radius) + M_PI) / (2.f * M_PI);
     auto saturation = qSqrt(qPow(point.x() - radius, 2) + qPow(point.y() - radius, 2)) / radius;

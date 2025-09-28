@@ -1,4 +1,4 @@
-#include "ColorConversion.hpp"
+#include "QColorExtended.hpp"
 
 float Utils::ColorConversion::normalize_component(uint8_t component)
 {
@@ -97,4 +97,34 @@ QVector3D Utils::ColorConversion::oklab_to_xyz(double L, double a, double b) {
     const float x_w = 0.95047, y_w = 1.0, z_w = 1.08883;
 
     return QVector3D{(x_p * x_w),(y_p * y_w), (z_p * z_w)};
+}
+
+QColorExtended::QColorExtended(QColor *color)
+    : m_Color(color)
+{}
+
+QColor *QColorExtended::GetColor() const
+{
+    return m_Color;
+}
+
+void QColorExtended::ToXyz(const float scale_factor)
+{
+    QColorExtended::ToXyz(*this, scale_factor);
+}
+
+QVector3D QColorExtended::ToXyz(QColorExtended &color_ex, const float scale_factor)
+{
+    return Utils::ColorConversion::rgb_to_xyz(color_ex.GetColor()->rgb(), scale_factor);
+}
+
+void QColorExtended::FromXyzToRgb(const float unscale_factor)
+{
+    const QRgb rgb = QColorExtended::FromXyzToRgb(QColorExtended::ToXyz((*this)), unscale_factor);
+    m_Color->setRgb(rgb);
+}
+
+QRgb QColorExtended::FromXyzToRgb(QVector3D xyz, const float unscale_factor)
+{
+    return Utils::ColorConversion::xyz_to_rgb(xyz, unscale_factor);
 }

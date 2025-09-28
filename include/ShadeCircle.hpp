@@ -22,7 +22,6 @@ public:
     ~ShadeCircle() Q_DECL_EQ_DEFAULT;
 
     void SetRelativeColor(QColor relative_color);
-    QColor GetRelativeColor() const {return m_RelativeColor;}
 
     void SetShadeColor(std::shared_ptr<QColor> shade_color);
     std::shared_ptr<QColor> GetSelectedShade() const {return m_SelectedShadeColor;}
@@ -33,8 +32,7 @@ protected:
     void mousePressEvent(QMouseEvent* event) Q_DECL_OVERRIDE;
     void mouseReleaseEvent(QMouseEvent *event) Q_DECL_OVERRIDE;
 signals:
-    void ShadeColorChanged();
-    void OnShadeChanged(std::shared_ptr<QColor> new_shade);
+    void ShadeChanged(std::shared_ptr<QColor> new_shade);
 };
 
 #endif // SHADECIRCLE_HPP

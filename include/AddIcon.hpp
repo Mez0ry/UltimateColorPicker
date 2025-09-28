@@ -8,8 +8,8 @@ class PalleteNameSpecifierPopup : public QLineEdit{
 private:
 public:
     PalleteNameSpecifierPopup(QWidget* parent = Q_NULLPTR);
-
     ~PalleteNameSpecifierPopup() Q_DECL_EQ_DEFAULT;
+
 signals:
     void PressedOutside();
 protected:
@@ -25,11 +25,9 @@ private:
     QString m_TextToAdd;
 public:
     explicit AddIcon(QWidget* parent = Q_NULLPTR,QSize size = {32,32});
-
     ~AddIcon() Q_DECL_EQ_DEFAULT;
 
     void OnParentGeometryUpdate(QRect rect);
-    void OnParentSizeUpdate(QSize size);
 
     void SetPlaceHolderText(QString placeholder);
 signals:
@@ -38,7 +36,6 @@ signals:
     void IsLeftClicked();
 protected:
     void mousePressEvent(QMouseEvent* event) Q_DECL_OVERRIDE;
-
     void closeEvent(QCloseEvent *event) Q_DECL_OVERRIDE;
 private:
 };

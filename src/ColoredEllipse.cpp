@@ -6,9 +6,9 @@
 
 ColoredEllipse::ColoredEllipse(QColor color, int radius, QWidget *parent) : QWidget(parent), m_Color(color), m_Size(radius * 2,radius * 2), m_Radius(radius){
 
-    this->setGeometry(0,0,m_Size.width() ,m_Size.height());
+    this->setGeometry(0, 0, m_Size.width(), m_Size.height());
     this->setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));
-    this->setMaximumSize(QSize(m_Size.width() + 122,m_Size.height() + 122));
+    this->setMaximumSize(QSize(m_Size.width() + 122, m_Size.height() + 122));
     this->setMinimumSize(m_Size);
 }
 

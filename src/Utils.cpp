@@ -30,14 +30,14 @@ QColor Utils::GetComplementaryFromFactor(QColor base_color, int hue_angle_factor
     auto base_hue_angle = base_color.hslHue();
 
     auto complementary_angle = base_hue_angle + hue_angle_factor;
-    if(complementary_angle > 360){ // wrap
+    if(complementary_angle > 360){
         complementary_angle -= 360;
     }else if(complementary_angle < 0){
         complementary_angle += 360;
     }
 
     QColor complementary{Qt::black};
-    complementary.setHsv(complementary_angle,base_color.saturation(),base_color.value());
+    complementary.setHsv(complementary_angle,base_color.saturation(), base_color.value());
 
     return complementary;
 }
@@ -67,7 +67,7 @@ std::vector<QColor> Utils::GetTetradic(QColor base_color)
     std::vector<QColor> res;
     res.push_back(base_color);
 
-    int angle[3] = {180,90,180};
+    int angle[3] = {180, 90, 180};
 
     for(auto iterations_count = 0; iterations_count < 3; iterations_count++ ){
         res.push_back(GetComplementaryFromFactor((iterations_count != 0) ? res[iterations_count] : base_color,angle[iterations_count]));
@@ -82,8 +82,8 @@ std::vector<QColor> Utils::GetAnalagous(QColor base_color)
     res.push_back(base_color);
 
     for(auto iteration = 0, p_hue_factor = 20, n_hue_factor = -20; iteration < 3; iteration++, p_hue_factor += 10, n_hue_factor -= 10){
-        res.push_back(GetComplementaryFromFactor(base_color,p_hue_factor));
-        res.push_back(GetComplementaryFromFactor(base_color,n_hue_factor));
+        res.push_back(GetComplementaryFromFactor(base_color, p_hue_factor));
+        res.push_back(GetComplementaryFromFactor(base_color, n_hue_factor));
     }
 
     return res;
@@ -95,8 +95,8 @@ std::vector<QColor> Utils::GetSplitComplementary(QColor base_color)
     res.push_back(base_color);
     int hue_angles[2] = {150, 210};
 
-    for(auto iterations_count = 0;iterations_count < 2; iterations_count++){
-        res.push_back(GetComplementaryFromFactor(base_color,hue_angles[iterations_count]));
+    for(auto iterations_count = 0; iterations_count < 2; iterations_count++){
+        res.push_back(GetComplementaryFromFactor(base_color, hue_angles[iterations_count]));
     }
 
     return res;
@@ -116,7 +116,7 @@ QJsonDocument Utils::Json::LoadJson(QFile& file)
     }
 
     QJsonParseError parse_error;
-    auto json_doc = QJsonDocument::fromJson(file.readAll(),&parse_error);
+    auto json_doc = QJsonDocument::fromJson(file.readAll(), &parse_error);
 
     if(parse_error.error != QJsonParseError::NoError){
         qCritical() << "failed to convert json text to QJsonDocument. Error: " << parse_error.errorString();

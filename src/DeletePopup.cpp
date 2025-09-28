@@ -20,8 +20,6 @@ DeletePopup::DeletePopup(QWidget *parent) : QLabel(parent){
     this->setMaximumWidth(70);
 }
 
-DeletePopup::~DeletePopup(){}
-
 void DeletePopup::OnRightClick(int border_length){
     auto parent_geom_rect = this->parentWidget()->geometry();
     auto parent_geom_pos = this->parentWidget()->mapToGlobal(QPoint(0,0));

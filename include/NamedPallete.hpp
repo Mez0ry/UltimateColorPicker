@@ -14,7 +14,6 @@ private:
     DeletePopup m_DeletePopup;
 public:
     explicit NamedPallete(const QString& pallete_name,QJsonObject color_values = QJsonObject(),QWidget* parent = Q_NULLPTR);
-
     ~NamedPallete() Q_DECL_EQ_DEFAULT;
 
     void Serialize(QJsonDocument doc, const QString& file_path);

@@ -9,6 +9,7 @@
 #include "ui_mainwindow.h"
 
 class NavigationBar;
+class Carousel;
 
 namespace Ui {
     class MainWindow;
@@ -34,6 +35,7 @@ protected:
 private:
     Ui::MainWindow *m_Ui;
     QSharedPointer<NavigationBar> m_NavBar;
+    QSharedPointer<Carousel> m_Carousel;
 };
 
 #endif // MAINWINDOW_H

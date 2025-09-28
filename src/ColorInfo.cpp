@@ -11,7 +11,15 @@
 ColorInfo::ColorInfo(std::shared_ptr<QColor> color, QWidget *parent) : QWidget(parent)
 {
     SetColorContext(color);
+    Setup();
+}
 
+ColorInfo::~ColorInfo()
+{
+    DisconnectAll();
+}
+
+void ColorInfo::Setup() {
     auto main_window = static_cast<MainWindow*>(Utils::GetMainWindow());
     auto ui = main_window->GetUi();
 
@@ -82,11 +90,6 @@ ColorInfo::ColorInfo(std::shared_ptr<QColor> color, QWidget *parent) : QWidget(p
     });
 }
 
-ColorInfo::~ColorInfo()
-{
-    DisconnectAll();
-}
-
 void ColorInfo::SetColorContext(std::shared_ptr<QColor> color)
 {
     if(color == m_ColorContext){
@@ -99,11 +102,6 @@ void ColorInfo::SetColorContext(std::shared_ptr<QColor> color)
 
     m_ColorContext = color;
     SetupConnections();
-}
-
- std::shared_ptr<QColor> ColorInfo::GetColorContext() const
-{
-    return m_ColorContext;
 }
 
 void ColorInfo::SetupColorInfo()

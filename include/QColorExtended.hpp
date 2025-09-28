@@ -1,5 +1,5 @@
-#ifndef COLORCONVERSION_HPP
-#define COLORCONVERSION_HPP
+#ifndef QCOLOREXTENDED_H
+#define QCOLOREXTENDED_H
 #include <QColor>
 #include <QMatrix4x4>
 #include <QTransform>
@@ -79,4 +79,46 @@ inline QVector3D oklab_to_xyz(double L, double a, double b);
 QColor oklab_to_rgb(double L, double a, double b);
 
 } //!namespace
-#endif // COLORCONVERSION_HPP
+
+struct Oklab{
+private:
+    double m_L;
+    double m_a;
+    double m_b;
+public:
+    Oklab(const double L, const double a, const double b) : m_L(L), m_a(a), m_b(b){}
+    ~Oklab() = default;
+
+    double GetL() const {return m_L;}
+    double GetA() const {return m_a;}
+    double GetB() const {return m_b;}
+
+    void SetL(const double l){m_L = l;}
+    void SetA(const double a){m_a = a;}
+    void SetB(const double b){m_b = b;}
+
+    QColor GetAsQColor() const {return Utils::ColorConversion::oklab_to_rgb(m_L,m_a,m_b);}
+    operator QColor() { return GetAsQColor(); }
+private:
+};
+
+class QColorExtended{
+private:
+    QColor* m_Color{Q_NULLPTR};
+public:
+    ~QColorExtended() Q_DECL_EQ_DEFAULT;
+    QColorExtended(QColor* color);
+
+    [[nodiscard]] QColor* GetColor() const;
+
+    void ToXyz(const float scale_factor = 100);
+    static QVector3D ToXyz(QColorExtended& color_ex, const float scale_factor = 100);
+
+    void FromXyzToRgb(const float unscale_factor = 100);
+    static QRgb FromXyzToRgb(QVector3D xyz, const float unscale_factor = 100);
+public:
+    operator QColor*() { return GetColor(); }
+private:
+};
+
+#endif // QCOLOREXTENDED_H

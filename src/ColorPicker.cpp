@@ -32,14 +32,14 @@ void ColorPicker::Start()
     setWindowFlags(Qt::FramelessWindowHint | Qt::Tool | Qt::WindowStaysOnTopHint);
     setWindowModality(Qt::ApplicationModal);
     setFocusPolicy(Qt::StrongFocus);
-    setGeometry(currentScreenLogicalGeometry());
+    setGeometry(CurrentScreenLogicalGeometry());
     showFullScreen();
     activateWindow();
     grabMouse();
     grabKeyboard();
 
     m_Timer = new QTimer(this);
-    m_TimerConnection = connect(m_Timer, &QTimer::timeout, this, [this]{ sampleUnderCursor(); update(); });
+    m_TimerConnection = connect(m_Timer, &QTimer::timeout, this, [this]{ SampleUnderCursor(); update(); });
     m_Timer->start(16);
 }
 
@@ -49,13 +49,13 @@ void ColorPicker::OnButtonPush()
     this->Start();
 }
 
-QRect ColorPicker::currentScreenLogicalGeometry() const {
+QRect ColorPicker::CurrentScreenLogicalGeometry() const {
     const QScreen* s = QGuiApplication::screenAt(QCursor::pos());
     if (!s) s = QGuiApplication::primaryScreen();
     return s ? s->geometry() : QRect(0, 0, 0, 0);
 }
 
-void ColorPicker::sampleUnderCursor() {
+void ColorPicker::SampleUnderCursor() {
     m_CursorGlobal = QCursor::pos();
     QScreen* const s = QGuiApplication::screenAt(m_CursorGlobal);
 
@@ -103,7 +103,7 @@ void ColorPicker::sampleUnderCursor() {
 }
 
 void ColorPicker::paintEvent(QPaintEvent*) {
-    setGeometry(currentScreenLogicalGeometry());
+    setGeometry(CurrentScreenLogicalGeometry());
     showFullScreen();
     activateWindow();
     grabMouse();
@@ -131,7 +131,6 @@ void ColorPicker::paintEvent(QPaintEvent*) {
     p.drawLine(center.x() + m_Hole + 1, center.y(), center.x() + m_Radius, center.y());
     p.drawLine(center.x(), center.y() - m_Radius, center.x(), center.y() - m_Hole - 1);
     p.drawLine(center.x(), center.y() + m_Hole + 1, center.x(), center.y() + m_Radius);
-
 
     const QString hex = m_SelectedColor.name(QColor::HexRgb).toUpper();
     const QString rgb = QString("RGB(%1, %2, %3, %4)")
@@ -188,7 +187,7 @@ void ColorPicker::keyReleaseEvent(QKeyEvent* e) {
 
 bool ColorPicker::event(QEvent* ev) {
     if (ev->type() == QEvent::ScreenChangeInternal) {
-        setGeometry(currentScreenLogicalGeometry());
+        setGeometry(CurrentScreenLogicalGeometry());
     }
     return QWidget::event(ev);
 }

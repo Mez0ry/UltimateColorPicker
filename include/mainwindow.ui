@@ -613,40 +613,9 @@
             <x>200</x>
             <y>9</y>
             <width>325</width>
-            <height>171</height>
+            <height>191</height>
            </rect>
           </property>
-          <widget class="QWidget" name="colorWheelWidget" native="true">
-           <property name="geometry">
-            <rect>
-             <x>8</x>
-             <y>10</y>
-             <width>310</width>
-             <height>170</height>
-            </rect>
-           </property>
-           <property name="focusPolicy">
-            <enum>Qt::FocusPolicy::ClickFocus</enum>
-           </property>
-           <widget class="QWidget" name="formLayoutWidget">
-            <property name="geometry">
-             <rect>
-              <x>30</x>
-              <y>0</y>
-              <width>271</width>
-              <height>177</height>
-             </rect>
-            </property>
-            <layout class="QFormLayout" name="formLayout">
-             <item row="0" column="0" colspan="2">
-              <widget class="QStackedWidget" name="color_wheel_types">
-               <widget class="QWidget" name="page"/>
-               <widget class="QWidget" name="page_2"/>
-              </widget>
-             </item>
-            </layout>
-           </widget>
-          </widget>
           <widget class="QWidget" name="NavigationWidget" native="true">
            <property name="geometry">
             <rect>
@@ -798,75 +767,43 @@ QPushButton:focus {background: rgba(0, 0, 0, 0);}</string>
             </property>
            </widget>
           </widget>
-          <widget class="QWidget" name="widget_2" native="true">
+          <widget class="QWidget" name="horizontalLayoutWidget">
            <property name="geometry">
             <rect>
-             <x>187</x>
-             <y>10</y>
-             <width>151</width>
-             <height>201</height>
+             <x>50</x>
+             <y>160</y>
+             <width>132</width>
+             <height>31</height>
             </rect>
            </property>
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <widget class="QComboBox" name="ColorCombsBox">
-            <property name="geometry">
-             <rect>
-              <x>10</x>
-              <y>10</y>
-              <width>65</width>
-              <height>23</height>
-             </rect>
+           <layout class="QHBoxLayout" name="CarouselHorizontalLayout">
+            <property name="spacing">
+             <number>2</number>
             </property>
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="maximumSize">
-             <size>
-              <width>110</width>
-              <height>32</height>
-             </size>
-            </property>
-            <property name="font">
-             <font>
-              <pointsize>8</pointsize>
-             </font>
-            </property>
-            <property name="styleSheet">
-             <string notr="true">color: white;</string>
-            </property>
-            <property name="sizeAdjustPolicy">
-             <enum>QComboBox::SizeAdjustPolicy::AdjustToContents</enum>
-            </property>
-            <property name="placeholderText">
-             <string/>
-            </property>
-           </widget>
-           <widget class="QWidget" name="gridLayoutWidget">
-            <property name="geometry">
-             <rect>
-              <x>10</x>
-              <y>39</y>
-              <width>101</width>
-              <height>41</height>
-             </rect>
-            </property>
-            <layout class="QGridLayout" name="ColorCombosGrid" rowstretch="0" columnstretch="0" rowminimumheight="0" columnminimumwidth="0">
-             <property name="sizeConstraint">
-              <enum>QLayout::SizeConstraint::SetFixedSize</enum>
-             </property>
-             <property name="verticalSpacing">
-              <number>3</number>
-             </property>
-            </layout>
-           </widget>
+            <item>
+             <widget class="QFrame" name="frame_3">
+              <property name="enabled">
+               <bool>true</bool>
+              </property>
+              <property name="minimumSize">
+               <size>
+                <width>130</width>
+                <height>29</height>
+               </size>
+              </property>
+              <property name="maximumSize">
+               <size>
+                <width>137</width>
+                <height>29</height>
+               </size>
+              </property>
+              <property name="styleSheet">
+               <string notr="true">border: 1px solid #3C404E;
+border-radius: 2%;</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
           </widget>
          </widget>
          <widget class="QPushButton" name="donation_button">
@@ -936,6 +873,95 @@ QPushButton:focus {background: rgba(0, 0, 0, 0);}</string>
           </property>
           <property name="flat">
            <bool>true</bool>
+          </property>
+         </widget>
+         <widget class="QWidget" name="widget_2" native="true">
+          <property name="geometry">
+           <rect>
+            <x>390</x>
+            <y>10</y>
+            <width>151</width>
+            <height>201</height>
+           </rect>
+          </property>
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <widget class="QComboBox" name="ColorCombsBox">
+           <property name="geometry">
+            <rect>
+             <x>10</x>
+             <y>11</y>
+             <width>65</width>
+             <height>23</height>
+            </rect>
+           </property>
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>110</width>
+             <height>32</height>
+            </size>
+           </property>
+           <property name="font">
+            <font>
+             <pointsize>8</pointsize>
+            </font>
+           </property>
+           <property name="styleSheet">
+            <string notr="true">color: white;</string>
+           </property>
+           <property name="sizeAdjustPolicy">
+            <enum>QComboBox::SizeAdjustPolicy::AdjustToContents</enum>
+           </property>
+           <property name="placeholderText">
+            <string/>
+           </property>
+          </widget>
+          <widget class="QWidget" name="gridLayoutWidget">
+           <property name="geometry">
+            <rect>
+             <x>10</x>
+             <y>40</y>
+             <width>101</width>
+             <height>41</height>
+            </rect>
+           </property>
+           <layout class="QGridLayout" name="ColorCombosGrid" rowstretch="0" columnstretch="0" rowminimumheight="0" columnminimumwidth="0">
+            <property name="sizeConstraint">
+             <enum>QLayout::SizeConstraint::SetFixedSize</enum>
+            </property>
+            <property name="verticalSpacing">
+             <number>3</number>
+            </property>
+           </layout>
+          </widget>
+         </widget>
+         <widget class="QFrame" name="frame_2">
+          <property name="geometry">
+           <rect>
+            <x>244</x>
+            <y>10</y>
+            <width>150</width>
+            <height>150</height>
+           </rect>
+          </property>
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="autoFillBackground">
+           <bool>false</bool>
           </property>
          </widget>
         </widget>

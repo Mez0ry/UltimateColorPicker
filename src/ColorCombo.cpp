@@ -1,10 +1,11 @@
 #include "ColorCombo.hpp"
-#include "mainwindow.h"
-
+#include <QComboBox>
 #include <QMainWindow>
-
 #include <QGridLayout>
 #include <QProxyStyle>
+
+#include "mainwindow.h"
+
 #include "ColorCell.hpp"
 #include "Utils.hpp"
 
@@ -13,7 +14,6 @@ ColorCombo::ColorCombo(QWidget *parent) : QWidget(parent){
     auto ui = main_window->GetUi();
 
     this->m_ComboBox = ui->ColorCombsBox;
-
     this->m_ColorComboGrid = ui->ColorCombosGrid;
 
     m_ComboBox->setDuplicatesEnabled(false);
@@ -23,11 +23,11 @@ ColorCombo::ColorCombo(QWidget *parent) : QWidget(parent){
     m_ComboBox->addItem("Tetradic");
     m_ComboBox->addItem("Analogous");
 
-    connect(this,&ColorCombo::BaseColorChanged,this,[=](){
+    connect(this, &ColorCombo::BaseColorChanged, this, [=](){
         this->UpdateColor();
     });
 
-    connect(m_ComboBox,&QComboBox::currentIndexChanged,this,[=](int new_index){
+    connect(m_ComboBox, &QComboBox::currentIndexChanged, this, [=](int new_index){
         m_CurrentComboIndex = new_index;
         ClearGridLayout(m_ColorComboGrid);
         this->UpdateColor();
@@ -87,7 +87,6 @@ void ColorCombo::AddColorCellsToLayout(QGridLayout *layout, std::vector<QColor> 
 
         pos.setX(pos.x() + 1);
     }
-
 
     layout->update();
 }

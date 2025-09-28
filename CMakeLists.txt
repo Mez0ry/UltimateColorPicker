@@ -32,9 +32,15 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         src/AddIcon.cpp src/ColorCell.cpp src/ColorCombo.cpp src/ColoredEllipse.cpp src/ColorInfo.cpp src/ColorPallete.cpp src/ColorPicker.cpp src/ColorWheel.cpp src/DeletePopup.cpp src/GridLayout.cpp src/main.cpp src/mainwindow.cpp src/NamedPallete.cpp src/NavigationBar.cpp src/ShadeCircle.cpp src/Utils.cpp
         include/AddIcon.hpp include/ColorCell.hpp include/ColorCombo.hpp include/ColoredEllipse.hpp include/ColorInfo.hpp include/ColorPallete.hpp include/ColorPicker.hpp include/ColorWheel.hpp include/DeletePopup.hpp include/GridLayout.hpp  include/mainwindow.h include/NamedPallete.hpp include/NavigationBar.hpp include/ShadeCircle.hpp include/Utils.hpp
         application.qrc
-        include/ColorConversion.hpp
-        src/ColorConversion.cpp
-
+        include/QColorExtended.hpp
+        src/QColorExtended.cpp
+        include/SlidingWindow.hpp
+        src/SlidingWindow.cpp
+        include/Carousel.hpp
+        src/Carousel.cpp
+        include/SingletonBase.hpp
+        include/EllipseButton.hpp
+        src/EllipseButton.cpp
     )
 
     target_include_directories(UltimateColorPicker PRIVATE  include)
