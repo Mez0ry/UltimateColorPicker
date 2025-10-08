@@ -33,8 +33,8 @@ find_package(Catch2 3 REQUIRED)
 find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Gui)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Gui)
 
-add_executable(Tests TestColorConversion.cpp
-    main.cpp ${CMAKE_SOURCE_DIR}/src/ColorConversion.cpp
+add_executable(Tests TestQColorExtended.cpp
+    main.cpp ${CMAKE_SOURCE_DIR}/src/QColorExtended.cpp
     IsBetweenMatcher.hpp)
 
 target_link_libraries(Tests PRIVATE Catch2::Catch2WithMain)

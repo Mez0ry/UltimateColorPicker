@@ -1,7 +1,7 @@
 #include <catch2/catch_approx.hpp>
 #include <catch2/catch_test_macros.hpp>
 
-#include "ColorConversion.hpp"
+#include "QColorExtended.hpp"
 
 TEST_CASE("Testing rgb normalization function in ColorConversion", "[ColorConversion][Normalization]")
 {
